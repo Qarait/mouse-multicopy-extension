@@ -1,0 +1,234 @@
+#mmc-widget,
+#mmc-widget * {
+  box-sizing: border-box;
+  color: #111827;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  letter-spacing: 0;
+}
+
+#mmc-widget {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2147483647;
+  width: min(360px, calc(100vw - 32px));
+  pointer-events: auto;
+}
+
+#mmc-panel {
+  display: none;
+  margin-bottom: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(17, 24, 39, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 18px 48px rgba(17, 24, 39, 0.22);
+}
+
+#mmc-widget.mmc-open #mmc-panel {
+  display: block;
+}
+
+#mmc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 10px 8px;
+  border-bottom: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+#mmc-title {
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+#mmc-status {
+  color: #4b5563;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+#mmc-slots {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 10px;
+  max-height: 310px;
+  overflow: auto;
+}
+
+.mmc-slot {
+  position: relative;
+  min-height: 58px;
+}
+
+.mmc-slot-main {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 6px;
+  align-items: start;
+  width: 100%;
+  min-height: 58px;
+  padding: 7px 24px 7px 7px;
+  border: 1px solid rgba(17, 24, 39, 0.12);
+  border-radius: 7px;
+  background: #f9fafb;
+  cursor: pointer;
+  text-align: left;
+}
+
+.mmc-slot-main:hover {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.mmc-slot-main:disabled,
+.mmc-delete:disabled {
+  cursor: default;
+  opacity: 0.58;
+}
+
+.mmc-slot-main:disabled:hover {
+  border-color: rgba(17, 24, 39, 0.12);
+  background: #f9fafb;
+}
+
+.mmc-delete {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  min-height: 20px;
+  padding: 0;
+  border: 1px solid rgba(17, 24, 39, 0.12);
+  border-radius: 6px;
+  background: #fff;
+  color: #4b5563;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.mmc-delete:hover {
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+.mmc-number {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: #111827;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.mmc-preview {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #374151;
+  font-size: 12px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+#mmc-actions {
+  display: flex;
+  gap: 6px;
+  padding: 0 10px 10px;
+}
+
+.mmc-action,
+#mmc-toggle {
+  min-height: 34px;
+  border: 1px solid rgba(17, 24, 39, 0.12);
+  border-radius: 7px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mmc-action {
+  flex: 1;
+  padding: 7px 8px;
+}
+
+#mmc-toggle {
+  width: 100%;
+  padding: 9px 11px;
+  background: #111827;
+  color: #fff;
+  box-shadow: 0 10px 26px rgba(17, 24, 39, 0.2);
+}
+
+#mmc-toggle[data-enabled="false"] {
+  background: #6b7280;
+}
+
+#mmc-toast {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  display: none;
+  align-items: center;
+  gap: 8px;
+  max-width: 320px;
+  padding: 8px 10px;
+  border-radius: 7px;
+  background: #111827;
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.35;
+  box-shadow: 0 12px 30px rgba(17, 24, 39, 0.22);
+}
+
+#mmc-toast.mmc-show {
+  display: flex;
+}
+
+#mmc-toast-message {
+  min-width: 0;
+  color: #fff;
+}
+
+#mmc-undo {
+  flex: 0 0 auto;
+  min-height: 26px;
+  padding: 4px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+#mmc-undo[hidden] {
+  display: none;
+}
+
+@media (max-width: 520px) {
+  #mmc-widget {
+    right: 10px;
+    bottom: 10px;
+    width: calc(100vw - 20px);
+  }
+
+  #mmc-slots {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

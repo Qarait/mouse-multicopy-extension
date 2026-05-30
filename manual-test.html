@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mouse MultiCopy Manual Test</title>
+    <style>
+      body {
+        max-width: 820px;
+        margin: 40px auto;
+        padding: 0 18px 120px;
+        color: #172033;
+        font-family: Arial, sans-serif;
+        line-height: 1.55;
+      }
+
+      h1 {
+        margin-bottom: 8px;
+      }
+
+      .sample,
+      .target {
+        margin-top: 20px;
+        padding: 18px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      textarea,
+      input {
+        box-sizing: border-box;
+        display: block;
+        width: 100%;
+        margin-top: 10px;
+        padding: 12px;
+        border: 1px solid #9ca3af;
+        border-radius: 8px;
+        font: inherit;
+      }
+
+      textarea {
+        min-height: 130px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Mouse MultiCopy Manual Test</h1>
+    <p>Use this page after loading the extension in Chrome. Try highlight, undo, duplicate skipping, individual delete, and paste.</p>
+
+    <section class="sample">
+      <h2>Text to Highlight</h2>
+      <p>
+        Alpha selection is the first phrase. Beta selection is the second phrase.
+        Gamma selection is the third phrase. Delta selection is the fourth phrase.
+      </p>
+    </section>
+
+    <section class="target">
+      <h2>Paste Targets</h2>
+      <label>
+        Single-line input
+        <input placeholder="Click here, then paste a slot">
+      </label>
+      <label>
+        Text area
+        <textarea placeholder="Click here, then paste slots 1, 2, or 3"></textarea>
+      </label>
+    </section>
+  </body>
+</html>

@@ -1,0 +1,4 @@
+dist/mouse-multicopy/
+*.crx
+*.pem
+*.log

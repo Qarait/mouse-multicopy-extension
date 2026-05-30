@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Mouse MultiCopy Automated Test</title>
+    <link rel="stylesheet" href="content.css">
+  </head>
+  <body data-test-status="running">
+    <p id="sample">
+      Alpha selection is the first test phrase. Beta selection is the second test phrase.
+      Gamma selection is the third test phrase.
+    </p>
+    <textarea id="target"></textarea>
+    <pre id="result">running</pre>
+
+    <script>
+      (() => {
+        const runtimeListeners = [];
+        const storageListeners = [];
+        let state = {};
+
+        window.chrome = {
+          runtime: {
+            onMessage: {
+              addListener(listener) {
+                runtimeListeners.push(listener);
+              }
+            }
+          },
+          storage: {
+            onChanged: {
+              addListener(listener) {
+                storageListeners.push(listener);
+              }
+            },
+            local: {
+              async get(key) {
+                return { [key]: state[key] };
+              },
+              async set(next) {
+                const previous = { ...state };
+                state = { ...state, ...next };
+                for (const key of Object.keys(next)) {
+                  const change = {
+                    [key]: {
+                      oldValue: previous[key],
+                      newValue: next[key]
+                    }
+                  };
+                  for (const listener of storageListeners) {
+                    listener(change, "local");
+                  }
+                }
+              }
+            }
+          }
+        };
+
+        window.__mmcTest = {
+          getState() {
+            return state.mouseMultiCopyState;
+          },
+          send(message) {
+            return new Promise((resolve) => {
+              const listener = runtimeListeners[0];
+              listener(message, {}, resolve);
+            });
+          }
+        };
+      })();
+    </script>
+    <script src="content.js"></script>
+    <script>
+      const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+      function selectPhrase(phrase) {
+        const sample = document.getElementById("sample");
+        const walker = document.createTreeWalker(sample, NodeFilter.SHOW_TEXT);
+        let node = walker.nextNode();
+
+        while (node) {
+          const index = node.textContent.indexOf(phrase);
+          if (index >= 0) {
+            const range = document.createRange();
+            range.setStart(node, index);
+            range.setEnd(node, index + phrase.length);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            sample.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+            return;
+          }
+
+          node = walker.nextNode();
+        }
+
+        throw new Error(`Phrase not found: ${phrase}`);
+      }
+
+      async function run() {
+        const result = document.getElementById("result");
+
+        try {
+          await wait(200);
+          selectPhrase("is");
+          await wait(250);
+
+          if ((window.__mmcTest.getState()?.clips.length || 0) !== 0) {
+            throw new Error("Expected short selection to be ignored.");
+          }
+
+          selectPhrase("Alpha selection");
+          await wait(250);
+          selectPhrase("Beta selection");
+          await wait(250);
+          selectPhrase("Gamma selection");
+          await wait(350);
+
+          selectPhrase("Beta selection");
+          await wait(250);
+
+          const state = window.__mmcTest.getState();
+          const slots = Array.from(document.querySelectorAll(".mmc-slot-main"));
+          const target = document.getElementById("target");
+
+          if (!state || state.clips.length !== 3) {
+            throw new Error(`Expected 3 clips, got ${state?.clips.length || 0}`);
+          }
+
+          target.focus();
+          slots[1].click();
+          await wait(120);
+
+          if (target.value !== "Beta selection") {
+            throw new Error(`Expected slot 2 paste, got: ${target.value}`);
+          }
+
+          await window.__mmcTest.send({ type: "pasteClip", index: 2 });
+          await wait(120);
+
+          if (target.value !== "Beta selectionGamma selection") {
+            throw new Error(`Expected slot 3 append, got: ${target.value}`);
+          }
+
+          document.querySelectorAll(".mmc-delete")[0].click();
+          await wait(120);
+
+          const afterDelete = window.__mmcTest.getState();
+          if (afterDelete.clips.length !== 2 || afterDelete.clips[0].text !== "Beta selection") {
+            throw new Error("Expected slot deletion to remove the first clip.");
+          }
+
+          result.textContent = JSON.stringify({
+            status: "pass",
+            clips: afterDelete.clips.map((clip) => clip.text),
+            pasted: target.value
+          });
+          document.body.dataset.testStatus = "pass";
+        } catch (error) {
+          result.textContent = JSON.stringify({
+            status: "fail",
+            message: error.message
+          });
+          document.body.dataset.testStatus = "fail";
+        }
+      }
+
+      window.addEventListener("load", run);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to Mouse MultiCopy</title>
+    <style>
+      body {
+        margin: 0;
+        background: #eef2f7;
+        color: #111827;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        letter-spacing: 0;
+      }
+
+      main {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 54px 20px;
+      }
+
+      h1 {
+        max-width: 680px;
+        margin: 0 0 14px;
+        font-size: 42px;
+        line-height: 1.08;
+      }
+
+      p {
+        max-width: 680px;
+        margin: 0 0 22px;
+        color: #374151;
+        font-size: 17px;
+        line-height: 1.55;
+      }
+
+      section {
+        margin-top: 22px;
+        padding: 22px;
+        border: 1px solid rgba(17, 24, 39, 0.1);
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 14px 34px rgba(17, 24, 39, 0.08);
+      }
+
+      h2 {
+        margin: 0 0 12px;
+        font-size: 18px;
+      }
+
+      ol,
+      ul {
+        margin: 0;
+        padding-left: 20px;
+        color: #374151;
+        line-height: 1.7;
+      }
+
+      code {
+        border-radius: 5px;
+        background: #f3f4f6;
+        padding: 2px 5px;
+      }
+
+      .note {
+        margin-top: 16px;
+        color: #4b5563;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Mouse MultiCopy is ready</h1>
+      <p>
+        Highlight text on normal webpages to collect snippets into numbered slots.
+        Open the floating <code>MC</code> button or the extension popup to paste a specific slot.
+      </p>
+
+      <section>
+        <h2>Try The Basic Flow</h2>
+        <ol>
+          <li>Open a normal webpage with text you can highlight.</li>
+          <li>Highlight one phrase, then another phrase, then a third phrase.</li>
+          <li>Click the floating <code>MC</code> button at the bottom-right of the page.</li>
+          <li>Focus a text box and click slot 1, 2, or 3 to paste that saved text.</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>Useful Safety Controls</h2>
+        <ul>
+          <li>Pause collect mode when you are selecting text but do not want to save it.</li>
+          <li>Undo appears after a capture if you saved something by mistake.</li>
+          <li>Duplicate protection keeps the same selection from filling multiple slots.</li>
+          <li>Minimum character length avoids tiny accidental selections.</li>
+        </ul>
+        <p class="note">
+          Chrome system pages such as <code>chrome://extensions</code> do not allow extension page widgets.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

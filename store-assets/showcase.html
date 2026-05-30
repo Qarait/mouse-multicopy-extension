@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mouse MultiCopy Store Screenshot</title>
+    <link rel="stylesheet" href="../content.css">
+    <style>
+      body {
+        margin: 0;
+        background: #eef2f7;
+        color: #111827;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        letter-spacing: 0;
+        overflow: hidden;
+      }
+
+      .page {
+        box-sizing: border-box;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 360px;
+        gap: 34px;
+        height: 800px;
+        padding: 48px;
+      }
+
+      .article,
+      .composer {
+        border: 1px solid rgba(17, 24, 39, 0.1);
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 14px 34px rgba(17, 24, 39, 0.08);
+      }
+
+      .article {
+        padding: 34px;
+      }
+
+      .composer {
+        align-self: start;
+        padding: 20px;
+      }
+
+      h1 {
+        max-width: 720px;
+        margin: 0 0 18px;
+        font-size: 44px;
+        line-height: 1.05;
+      }
+
+      h2 {
+        margin: 0 0 12px;
+        font-size: 18px;
+      }
+
+      p {
+        max-width: 780px;
+        margin: 0 0 18px;
+        color: #374151;
+        font-size: 18px;
+        line-height: 1.55;
+      }
+
+      mark {
+        border-radius: 4px;
+        background: #bfdbfe;
+        color: #111827;
+        padding: 2px 4px;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 220px;
+        padding: 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font: inherit;
+        line-height: 1.45;
+        resize: none;
+      }
+
+      .caption {
+        margin-top: 10px;
+        color: #6b7280;
+        font-size: 13px;
+      }
+
+      #mmc-widget {
+        right: 48px;
+        bottom: 42px;
+      }
+
+      #mmc-panel {
+        display: block;
+      }
+
+      #mmc-toggle {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <article class="article">
+        <h1>Collect highlighted text into numbered paste slots</h1>
+        <p>
+          Mouse MultiCopy turns repeated research copying into a faster selection flow.
+          Highlight <mark>key phrase one</mark>, then highlight <mark>key phrase two</mark>,
+          then highlight <mark>key phrase three</mark>.
+        </p>
+        <p>
+          The snippets stay in quick slots, so a user can paste slot 1, 2, 3,
+          or copy everything together without digging through clipboard history.
+        </p>
+        <p>
+          Text stays local in browser extension storage. The prototype does not send
+          copied text to a server.
+        </p>
+      </article>
+
+      <aside class="composer">
+        <h2>Paste target</h2>
+        <textarea>Slot 2 pasted here:
+key phrase two</textarea>
+        <div class="caption">Click any saved slot to paste that exact snippet.</div>
+      </aside>
+    </main>
+
+    <div id="mmc-widget" class="mmc-open">
+      <div id="mmc-panel" aria-label="Mouse MultiCopy slots">
+        <div id="mmc-header">
+          <div id="mmc-title">Mouse MultiCopy</div>
+          <div id="mmc-status">3 / 12</div>
+        </div>
+        <div id="mmc-slots">
+          <div class="mmc-slot">
+            <button class="mmc-slot-main" type="button">
+              <span class="mmc-number">1</span>
+              <span class="mmc-preview">key phrase one</span>
+            </button>
+            <button class="mmc-delete" type="button">x</button>
+          </div>
+          <div class="mmc-slot">
+            <button class="mmc-slot-main" type="button">
+              <span class="mmc-number">2</span>
+              <span class="mmc-preview">key phrase two</span>
+            </button>
+            <button class="mmc-delete" type="button">x</button>
+          </div>
+          <div class="mmc-slot">
+            <button class="mmc-slot-main" type="button">
+              <span class="mmc-number">3</span>
+              <span class="mmc-preview">key phrase three</span>
+            </button>
+            <button class="mmc-delete" type="button">x</button>
+          </div>
+          <div class="mmc-slot mmc-empty">
+            <button class="mmc-slot-main" type="button" disabled>
+              <span class="mmc-number">4</span>
+              <span class="mmc-preview">Empty</span>
+            </button>
+            <button class="mmc-delete" type="button" disabled>x</button>
+          </div>
+          <div class="mmc-slot mmc-empty">
+            <button class="mmc-slot-main" type="button" disabled>
+              <span class="mmc-number">5</span>
+              <span class="mmc-preview">Empty</span>
+            </button>
+            <button class="mmc-delete" type="button" disabled>x</button>
+          </div>
+          <div class="mmc-slot mmc-empty">
+            <button class="mmc-slot-main" type="button" disabled>
+              <span class="mmc-number">6</span>
+              <span class="mmc-preview">Empty</span>
+            </button>
+            <button class="mmc-delete" type="button" disabled>x</button>
+          </div>
+        </div>
+        <div id="mmc-actions">
+          <button class="mmc-action" type="button">Pause</button>
+          <button class="mmc-action" type="button">Copy All</button>
+          <button class="mmc-action" type="button">Clear</button>
+        </div>
+      </div>
+      <button id="mmc-toggle" type="button" data-enabled="true">MC 3</button>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mouse MultiCopy</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <h1>Mouse MultiCopy</h1>
+          <p id="summary">0 of 12 slots used</p>
+        </div>
+        <label class="switch">
+          <input id="enabled" type="checkbox">
+          <span>Collect</span>
+        </label>
+      </header>
+
+      <section class="controls" aria-label="Actions">
+        <button id="capture" type="button">Capture Selection</button>
+        <button id="clear" type="button">Clear</button>
+      </section>
+
+      <section class="settings" aria-label="Capture settings">
+        <label for="maxSlots">
+          Quick slots
+          <input id="maxSlots" type="number" min="3" max="50" step="1">
+        </label>
+        <label for="minChars">
+          Min chars
+          <input id="minChars" type="number" min="1" max="40" step="1">
+        </label>
+        <label class="checkbox" for="ignoreDuplicates">
+          <input id="ignoreDuplicates" type="checkbox">
+          <span>Skip duplicates</span>
+        </label>
+      </section>
+
+      <section id="slots" aria-label="Saved slots"></section>
+      <p id="message" role="status" aria-live="polite"></p>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>
