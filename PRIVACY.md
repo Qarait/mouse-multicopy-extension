@@ -18,7 +18,7 @@ Mouse MultiCopy does not send captured text, URLs, page titles, or usage data to
 
 ## Permissions
 
-Mouse MultiCopy requests access to webpages so it can read your current text selection and show the floating slot palette. It requests clipboard write access so it can copy a selected slot when no text field is focused.
+Mouse MultiCopy runs on webpages so it can read the text you intentionally highlight, show the floating slot palette, and paste a selected slot into focused text fields. It requests clipboard write access so it can copy a selected slot when no text field is focused.
 
 ## User Control
 

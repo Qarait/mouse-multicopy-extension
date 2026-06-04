@@ -35,6 +35,16 @@ Productivity
 
 Mouse MultiCopy stores captured text locally in your browser extension storage. It does not send captured text to a server and does not sell or share user data.
 
+Privacy policy URL:
+
+https://gist.github.com/Qarait/15671558d14faa3e1ed75e4886923f6c
+
+## Permission Justifications
+
+- `storage`: saves snippets and settings locally.
+- `clipboardWrite`: copies a chosen slot when no text field is focused.
+- Webpage access: detects highlighted text, shows the floating `MC` palette, and pastes into focused text fields.
+
 ## Store Assets To Upload
 
 - `icons/icon128.png`

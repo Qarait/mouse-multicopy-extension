@@ -36,6 +36,12 @@ For early testers, zip this folder and have them install it with `Load unpacked`
 
 For normal users, package and publish it through the Chrome Web Store or Microsoft Edge Add-ons. A store version should add production icons, a short privacy policy, screenshots, and a clear explanation that highlighted text is stored locally in browser extension storage.
 
+For Chrome Web Store submission details, use `CHROME_WEB_STORE_SUBMISSION.md`.
+
+Public privacy policy URL:
+
+https://gist.github.com/Qarait/15671558d14faa3e1ed75e4886923f6c
+
 ## Build The Store ZIP
 
 Generate icons and the store screenshot:
