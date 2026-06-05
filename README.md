@@ -72,6 +72,7 @@ The package contains only the runtime extension files, not tests or draft store 
 - Click a numbered slot to paste it into the focused text field.
 - If no text field is focused, the slot is copied to the system clipboard instead.
 - Use undo after accidental captures.
+- If the quick-slot list is full, the extension warns when slot 1 is replaced.
 - Delete individual slots from the page palette or popup.
 - Use the extension popup to pause collection, manually capture, paste, copy, clear, set quick-slot count, set minimum capture length, or disable duplicate protection.
 
@@ -86,8 +87,8 @@ Chrome may let you configure these at `chrome://extensions/shortcuts`:
 
 - This prototype works inside web pages, not native Windows apps.
 - Chrome system pages such as `chrome://extensions` do not allow content scripts.
-- Some rich editors handle pasted text differently; normal inputs, textareas, and many contenteditable editors work.
-- Slot 13 replaces the oldest item when the quick-slot limit is 12.
+- Some rich code editors, including CodeMirror and Monaco-based editors, may block direct insertion. In those editors, Mouse MultiCopy copies the slot to the clipboard and asks the user to press `Ctrl+V`.
+- Slot 13 replaces the oldest item when the quick-slot limit is 12, and the page toast warns when that happens.
 - The first-run welcome page explains the workflow but the live page widget appears only on ordinary webpages.
 
 ## Test

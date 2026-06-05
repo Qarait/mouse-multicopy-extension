@@ -200,10 +200,15 @@
       capturedAt: now
     };
 
+    const replacedClip = state.clips.length >= state.maxSlots ? state.clips[0] : null;
     const nextClips = [...state.clips, clip].slice(-state.maxSlots);
     await setState({ ...state, clips: nextClips });
     lastUndoClipId = clip.id;
-    showToast(`Captured slot ${nextClips.length}.`, { undoClipId: clip.id });
+    const slotNumber = nextClips.findIndex((nextClip) => nextClip.id === clip.id) + 1;
+    const message = replacedClip
+      ? `Slot 1 was replaced. New capture saved in slot ${slotNumber}.`
+      : `Captured slot ${slotNumber}.`;
+    showToast(message, { undoClipId: clip.id });
     widget.classList.add("mmc-open");
     return true;
   }
@@ -232,13 +237,22 @@
       ? lastEditable
       : findEditable(document.activeElement);
 
+    if (target && isRichCodeEditor(target)) {
+      await copyToClipboard(text);
+      showToast("Copied to clipboard instead. Press Ctrl+V in this editor.");
+      return true;
+    }
+
     if (target && insertText(target, text)) {
       showToast("Pasted selected slot.");
       return true;
     }
 
     await copyToClipboard(text);
-    showToast("No text box focused. Copied slot to clipboard.");
+    const message = target
+      ? "Copied to clipboard instead. Press Ctrl+V in this editor."
+      : "No text box focused. Copied slot to clipboard.";
+    showToast(message);
     return true;
   }
 
@@ -495,6 +509,21 @@
     }
 
     return node.closest?.("textarea, input, [contenteditable=''], [contenteditable='true']");
+  }
+
+  function isRichCodeEditor(node) {
+    const element = node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement;
+    if (!element) {
+      return false;
+    }
+
+    return Boolean(element.closest?.([
+      ".cm-editor",
+      ".CodeMirror",
+      ".monaco-editor",
+      "[data-editor-type='monaco']",
+      "[data-testid='codemirror-editor']"
+    ].join(",")));
   }
 
   function isTextInput(node) {

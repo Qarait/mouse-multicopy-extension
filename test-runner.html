@@ -8,9 +8,12 @@
   <body data-test-status="running">
     <p id="sample">
       Alpha selection is the first test phrase. Beta selection is the second test phrase.
-      Gamma selection is the third test phrase.
+      Gamma selection is the third test phrase. Delta selection is the fourth test phrase.
     </p>
     <textarea id="target"></textarea>
+    <div class="cm-editor">
+      <div id="codeTarget" contenteditable="true"></div>
+    </div>
     <pre id="result">running</pre>
 
     <script>
@@ -57,8 +60,12 @@
         };
 
         window.__mmcTest = {
+          clipboardText: "",
           getState() {
             return state.mouseMultiCopyState;
+          },
+          getClipboardText() {
+            return this.clipboardText;
           },
           send(message) {
             return new Promise((resolve) => {
@@ -67,6 +74,15 @@
             });
           }
         };
+
+        Object.defineProperty(navigator, "clipboard", {
+          configurable: true,
+          value: {
+            async writeText(text) {
+              window.__mmcTest.clipboardText = text;
+            }
+          }
+        });
       })();
     </script>
     <script src="content.js"></script>
@@ -102,6 +118,16 @@
 
         try {
           await wait(200);
+          await chrome.storage.local.set({
+            mouseMultiCopyState: {
+              enabled: true,
+              maxSlots: 3,
+              minChars: 3,
+              ignoreDuplicates: true,
+              clips: []
+            }
+          });
+
           selectPhrase("is");
           await wait(250);
 
@@ -120,33 +146,64 @@
           await wait(250);
 
           const state = window.__mmcTest.getState();
-          const slots = Array.from(document.querySelectorAll(".mmc-slot-main"));
           const target = document.getElementById("target");
 
           if (!state || state.clips.length !== 3) {
             throw new Error(`Expected 3 clips, got ${state?.clips.length || 0}`);
           }
 
+          selectPhrase("Delta selection");
+          await wait(250);
+
+          const afterEviction = window.__mmcTest.getState();
+          if (
+            afterEviction.clips.length !== 3 ||
+            afterEviction.clips[0].text !== "Beta selection" ||
+            afterEviction.clips[2].text !== "Delta selection"
+          ) {
+            throw new Error("Expected slot eviction to replace the oldest clip.");
+          }
+
+          const toast = document.getElementById("mmc-toast-message").textContent;
+          if (!toast.includes("Slot 1 was replaced")) {
+            throw new Error(`Expected eviction warning toast, got: ${toast}`);
+          }
+
+          const slots = Array.from(document.querySelectorAll(".mmc-slot-main"));
           target.focus();
           slots[1].click();
           await wait(120);
 
-          if (target.value !== "Beta selection") {
+          if (target.value !== "Gamma selection") {
             throw new Error(`Expected slot 2 paste, got: ${target.value}`);
           }
 
           await window.__mmcTest.send({ type: "pasteClip", index: 2 });
           await wait(120);
 
-          if (target.value !== "Beta selectionGamma selection") {
+          if (target.value !== "Gamma selectionDelta selection") {
             throw new Error(`Expected slot 3 append, got: ${target.value}`);
+          }
+
+          const codeTarget = document.getElementById("codeTarget");
+          codeTarget.focus();
+          await window.__mmcTest.send({ type: "pasteClip", index: 0 });
+          await wait(120);
+
+          const fallbackToast = document.getElementById("mmc-toast-message").textContent;
+          if (
+            codeTarget.textContent !== "" ||
+            window.__mmcTest.getClipboardText() !== "Beta selection" ||
+            !fallbackToast.includes("Copied to clipboard instead")
+          ) {
+            throw new Error("Expected rich editor fallback to copy instead of direct DOM insertion.");
           }
 
           document.querySelectorAll(".mmc-delete")[0].click();
           await wait(120);
 
           const afterDelete = window.__mmcTest.getState();
-          if (afterDelete.clips.length !== 2 || afterDelete.clips[0].text !== "Beta selection") {
+          if (afterDelete.clips.length !== 2 || afterDelete.clips[0].text !== "Gamma selection") {
             throw new Error("Expected slot deletion to remove the first clip.");
           }
 

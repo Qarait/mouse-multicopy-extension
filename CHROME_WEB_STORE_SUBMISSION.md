@@ -82,11 +82,13 @@ Use `STORE_LISTING.md` for the short description, full description, category, pr
 3. Highlight `Alpha selection`, `Beta selection`, and `Gamma selection`.
 4. Confirm the floating button shows `MC 3`.
 5. Open the palette and paste slot 2 into a textarea.
-6. Confirm duplicate highlighting does not add another copy when duplicate protection is on.
-7. Confirm short selections below the minimum length are ignored.
-8. Confirm Undo removes the latest captured slot.
-9. Confirm individual slot Delete works.
-10. Open the popup and confirm settings persist.
+6. Fill the configured quick slots, capture one extra snippet, and confirm the toast says slot 1 was replaced.
+7. Test a CodeMirror or Monaco-style editor and confirm the extension copies to clipboard with a `Ctrl+V` fallback message.
+8. Confirm duplicate highlighting does not add another copy when duplicate protection is on.
+9. Confirm short selections below the minimum length are ignored.
+10. Confirm Undo removes the latest captured slot.
+11. Confirm individual slot Delete works.
+12. Open the popup and confirm settings persist.
 
 ## Likely Review Questions
 
@@ -101,3 +103,5 @@ No. Captured snippets remain local in Chrome extension storage and are never sen
 ### Why does it need clipboard access?
 
 When no editable field is focused, a selected slot is copied to the clipboard so the user can paste it manually.
+
+It also uses clipboard fallback for rich code editors that block direct DOM insertion, such as CodeMirror and Monaco-based editors.

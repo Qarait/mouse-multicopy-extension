@@ -16,8 +16,10 @@ Features:
 
 - Capture highlighted webpage text into numbered slots
 - Paste a chosen slot into focused text fields and editors
+- Use clipboard fallback for rich code editors that block direct insertion
 - Copy all saved slots at once
 - Undo accidental captures
+- Warn when the oldest slot is replaced
 - Delete individual slots
 - Pause collection when you do not want selections saved
 - Adjust quick slots from 3 to 50
@@ -60,5 +62,11 @@ https://gist.github.com/Qarait/15671558d14faa3e1ed75e4886923f6c
 - Confirm the page widget shows `MC 3`.
 - Focus a textarea or input.
 - Paste slot 2 and confirm the correct snippet appears.
+- Capture one more snippet after quick slots are full and confirm the replacement toast appears.
+- Test a CodeMirror or Monaco-style editor and confirm the extension copies to clipboard with a Ctrl+V fallback message.
 - Open the popup and confirm collect mode, slot count, copy, paste, and clear controls work.
 - Confirm no console errors on a normal webpage.
+
+## Known Compatibility Notes
+
+Mouse MultiCopy directly inserts text into standard inputs, textareas, and many contenteditable fields. Some rich code editors, including CodeMirror and Monaco-based editors, manage their own editing model and may block direct DOM insertion. In those editors, Mouse MultiCopy copies the selected slot to the clipboard and asks the user to press `Ctrl+V`.
