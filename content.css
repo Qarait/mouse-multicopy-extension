@@ -64,6 +64,10 @@
   min-height: 58px;
 }
 
+.mmc-slot[draggable="true"] {
+  cursor: grab;
+}
+
 .mmc-slot-main {
   display: grid;
   grid-template-columns: 22px minmax(0, 1fr);
@@ -131,6 +135,21 @@
   font-size: 12px;
   font-weight: 700;
   line-height: 1;
+}
+
+.mmc-body {
+  min-width: 0;
+}
+
+.mmc-label {
+  display: block;
+  overflow: hidden;
+  color: #111827;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .mmc-preview {

@@ -207,9 +207,29 @@
             throw new Error("Expected slot deletion to remove the first clip.");
           }
 
+          await window.__mmcTest.send({ type: "renameClip", index: 0, label: "Issue" });
+          await wait(120);
+
+          const afterRename = window.__mmcTest.getState();
+          if (afterRename.clips[0].label !== "Issue") {
+            throw new Error("Expected slot label rename to persist.");
+          }
+
+          await window.__mmcTest.send({ type: "reorderClip", fromIndex: 1, toIndex: 0 });
+          await wait(120);
+
+          const afterReorder = window.__mmcTest.getState();
+          if (afterReorder.clips[0].text !== "Delta selection" || afterReorder.clips[1].text !== "Gamma selection") {
+            throw new Error("Expected slot reorder to persist.");
+          }
+
+          if (!afterReorder.groups || afterReorder.groups.length !== 1 || afterReorder.activeGroupId !== "default") {
+            throw new Error("Expected legacy clips to migrate into the default group.");
+          }
+
           result.textContent = JSON.stringify({
             status: "pass",
-            clips: afterDelete.clips.map((clip) => clip.text),
+            clips: afterReorder.clips.map((clip) => clip.text),
             pasted: target.value
           });
           document.body.dataset.testStatus = "pass";

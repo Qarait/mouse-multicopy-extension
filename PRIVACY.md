@@ -6,7 +6,7 @@ Mouse MultiCopy is designed to keep copied text local to your browser.
 
 ## Data The Extension Handles
 
-Mouse MultiCopy can store text that you highlight on webpages while collect mode is enabled. It may also store the page title, page URL, and capture time for each saved slot.
+Mouse MultiCopy can store text that you highlight on webpages while collect mode is enabled. It may also store slot names, slot order, local session names, the page title, page URL, and capture time for each saved slot.
 
 ## How Data Is Stored
 

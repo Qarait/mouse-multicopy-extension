@@ -16,6 +16,9 @@ Features:
 
 - Capture highlighted webpage text into numbered slots
 - Paste a chosen slot into focused text fields and editors
+- Rename slots to describe what each saved snippet is
+- Drag slots to reorder them before pasting
+- Create separate sessions for different tasks or research contexts
 - Use clipboard fallback for rich code editors that block direct insertion
 - Copy all saved slots at once
 - Undo accidental captures
@@ -52,7 +55,7 @@ https://gist.github.com/Qarait/15671558d14faa3e1ed75e4886923f6c
 - `icons/icon128.png`
 - `store-assets/screenshot-1280x800.png`
 - `PRIVACY.md`
-- Distribution ZIP from `dist/mouse-multicopy-0.2.0.zip`
+- Distribution ZIP from `dist/mouse-multicopy-0.3.0.zip`
 
 ## Manual QA Before Submission
 
@@ -62,6 +65,9 @@ https://gist.github.com/Qarait/15671558d14faa3e1ed75e4886923f6c
 - Confirm the page widget shows `MC 3`.
 - Focus a textarea or input.
 - Paste slot 2 and confirm the correct snippet appears.
+- Rename a slot and confirm the new name persists after closing and reopening the popup.
+- Drag a slot to a new position and confirm the paste order changes.
+- Create a second session, switch sessions, and confirm each session keeps separate clips.
 - Capture one more snippet after quick slots are full and confirm the replacement toast appears.
 - Test a CodeMirror or Monaco-style editor and confirm the extension copies to clipboard with a Ctrl+V fallback message.
 - Open the popup and confirm collect mode, slot count, copy, paste, and clear controls work.

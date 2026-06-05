@@ -4,7 +4,7 @@ Use this file when submitting Mouse MultiCopy to the Chrome Web Store Developer 
 
 ## Submission Status
 
-- Extension package: `dist/mouse-multicopy-0.2.0.zip`
+- Extension package: `dist/mouse-multicopy-0.3.0.zip`
 - Category: Productivity
 - Visibility recommendation for first review: Unlisted
 - Final manual QA required: Yes
@@ -20,6 +20,7 @@ Declare and justify these permissions in the Privacy practices tab.
 ### `storage`
 
 Stores the user's saved text snippets, quick-slot count, minimum capture length, duplicate-protection setting, and collect-mode state locally in browser extension storage.
+It also stores slot names, slot order, and local session/group names.
 
 ### `clipboardWrite`
 
@@ -70,7 +71,7 @@ Use `STORE_LISTING.md` for the short description, full description, category, pr
 
 ## Upload Assets
 
-- Package: `dist/mouse-multicopy-0.2.0.zip`
+- Package: `dist/mouse-multicopy-0.3.0.zip`
 - Icon: `icons/icon128.png`
 - Screenshot: `store-assets/screenshot-1280x800.png`
 - Privacy policy: public URL based on `PRIVACY.md`
@@ -82,13 +83,16 @@ Use `STORE_LISTING.md` for the short description, full description, category, pr
 3. Highlight `Alpha selection`, `Beta selection`, and `Gamma selection`.
 4. Confirm the floating button shows `MC 3`.
 5. Open the palette and paste slot 2 into a textarea.
-6. Fill the configured quick slots, capture one extra snippet, and confirm the toast says slot 1 was replaced.
-7. Test a CodeMirror or Monaco-style editor and confirm the extension copies to clipboard with a `Ctrl+V` fallback message.
-8. Confirm duplicate highlighting does not add another copy when duplicate protection is on.
-9. Confirm short selections below the minimum length are ignored.
-10. Confirm Undo removes the latest captured slot.
-11. Confirm individual slot Delete works.
-12. Open the popup and confirm settings persist.
+6. Rename a slot and confirm the label persists.
+7. Drag a slot to a new position and confirm the order persists.
+8. Create a second session, switch sessions, and confirm each session has separate clips.
+9. Fill the configured quick slots, capture one extra snippet, and confirm the toast says slot 1 was replaced.
+10. Test a CodeMirror or Monaco-style editor and confirm the extension copies to clipboard with a `Ctrl+V` fallback message.
+11. Confirm duplicate highlighting does not add another copy when duplicate protection is on.
+12. Confirm short selections below the minimum length are ignored.
+13. Confirm Undo removes the latest captured slot.
+14. Confirm individual slot Delete works.
+15. Open the popup and confirm settings persist.
 
 ## Likely Review Questions
 

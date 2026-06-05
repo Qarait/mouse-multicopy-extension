@@ -5,6 +5,8 @@
     maxSlots: 12,
     minChars: 3,
     ignoreDuplicates: true,
+    activeGroupId: "default",
+    groups: [],
     clips: []
   };
 
@@ -89,7 +91,11 @@
     undoButton = widget.querySelector("#mmc-undo");
     enabledButton = widget.querySelector("#mmc-enabled");
 
-    widget.addEventListener("mousedown", (event) => event.preventDefault());
+    widget.addEventListener("mousedown", (event) => {
+      if (!event.target.closest(".mmc-slot")) {
+        event.preventDefault();
+      }
+    });
     toggleButton.addEventListener("click", () => widget.classList.toggle("mmc-open"));
     undoButton.addEventListener("click", undoLastCapture);
     enabledButton.addEventListener("click", toggleEnabled);
@@ -129,6 +135,16 @@
 
     if (message.type === "deleteClip") {
       const result = await deleteClip(message.index);
+      return { ok: result };
+    }
+
+    if (message.type === "renameClip") {
+      const result = await renameClip(message.index, message.label);
+      return { ok: result };
+    }
+
+    if (message.type === "reorderClip") {
+      const result = await reorderClip(message.fromIndex, message.toIndex);
       return { ok: result };
     }
 
@@ -195,6 +211,7 @@
     const clip = {
       id: createClipId(now),
       text,
+      label: "",
       title: document.title || "",
       url: location.href,
       capturedAt: now
@@ -345,6 +362,50 @@
     return true;
   }
 
+  async function renameClip(index, label) {
+    const state = await getState();
+    if (!Number.isInteger(index) || index < 0 || index >= state.clips.length) {
+      return false;
+    }
+
+    const clips = state.clips.map((clip, clipIndex) => clipIndex === index
+      ? { ...clip, label: String(label || "").trim().slice(0, 60) }
+      : clip);
+    await setState({ ...state, clips });
+    showToast(clips[index].label ? `Renamed slot ${index + 1}.` : `Cleared slot ${index + 1} name.`);
+    return true;
+  }
+
+  async function promptRenameClip(index) {
+    const state = await getState();
+    const clip = state.clips[index];
+    if (!clip) {
+      return;
+    }
+
+    const current = clip.label || "";
+    const label = window.prompt(`Name slot ${index + 1}`, current);
+    if (label === null) {
+      return;
+    }
+
+    await renameClip(index, label);
+  }
+
+  async function reorderClip(fromIndex, toIndex) {
+    const state = await getState();
+    if (!isValidClipIndex(state.clips, fromIndex) || !isValidClipIndex(state.clips, toIndex) || fromIndex === toIndex) {
+      return false;
+    }
+
+    const clips = [...state.clips];
+    const [clip] = clips.splice(fromIndex, 1);
+    clips.splice(toIndex, 0, clip);
+    await setState({ ...state, clips });
+    showToast(`Moved slot ${fromIndex + 1} to ${toIndex + 1}.`);
+    return true;
+  }
+
   async function undoLastCapture() {
     if (!lastUndoClipId) {
       showToast("Nothing to undo.");
@@ -390,6 +451,7 @@
   function render(state) {
     const normalized = normalizeState(state);
     statusNode.textContent = `${normalized.clips.length} / ${normalized.maxSlots}`;
+    widget.dataset.groupId = normalized.activeGroupId;
     toggleButton.textContent = `MC ${normalized.clips.length}`;
     toggleButton.dataset.enabled = String(normalized.enabled);
     enabledButton.textContent = normalized.enabled ? "Pause" : "Resume";
@@ -397,12 +459,15 @@
       ? "Collect mode is on. Highlight text to save it."
       : "Collect mode is paused. Use the popup or shortcut to capture manually.";
 
+    widget.querySelector("#mmc-title").textContent = `Mouse MultiCopy - ${normalized.activeGroup.name}`;
     slotsNode.replaceChildren();
 
     for (let index = 0; index < normalized.maxSlots; index += 1) {
       const clip = normalized.clips[index];
       const slot = document.createElement("div");
       slot.className = `mmc-slot${clip ? "" : " mmc-empty"}`;
+      slot.draggable = Boolean(clip);
+      slot.dataset.index = index;
       slot.innerHTML = `
         <button class="mmc-slot-main" type="button"></button>
         <button class="mmc-delete" type="button" aria-label="Delete slot ${index + 1}">x</button>
@@ -411,9 +476,15 @@
       const mainButton = slot.querySelector(".mmc-slot-main");
       mainButton.innerHTML = `
         <span class="mmc-number">${index + 1}</span>
-        <span class="mmc-preview"></span>
+        <span class="mmc-body">
+          <span class="mmc-label"></span>
+          <span class="mmc-preview"></span>
+        </span>
       `;
       mainButton.disabled = !clip;
+      mainButton.querySelector(".mmc-label").textContent = clip
+        ? (clip.label || `Slot ${index + 1}`)
+        : `Slot ${index + 1}`;
       mainButton.querySelector(".mmc-preview").textContent = clip
         ? clip.text
         : "Empty";
@@ -421,6 +492,32 @@
         if (clip) {
           insertOrCopyText(clip.text);
         }
+      });
+      mainButton.addEventListener("dblclick", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (clip) {
+          promptRenameClip(index);
+        }
+      });
+
+      slot.addEventListener("dragstart", (event) => {
+        if (!clip) {
+          return;
+        }
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", String(index));
+      });
+      slot.addEventListener("dragover", (event) => {
+        if (clip) {
+          event.preventDefault();
+          event.dataTransfer.dropEffect = "move";
+        }
+      });
+      slot.addEventListener("drop", (event) => {
+        event.preventDefault();
+        const fromIndex = Number(event.dataTransfer.getData("text/plain"));
+        reorderClip(fromIndex, index);
       });
 
       const deleteButton = slot.querySelector(".mmc-delete");
@@ -455,23 +552,66 @@
   function normalizeState(state) {
     const maxSlots = clampNumber(state?.maxSlots, DEFAULT_STATE.maxSlots, 3, 50);
     const minChars = clampNumber(state?.minChars, DEFAULT_STATE.minChars, 1, 40);
-    const clips = Array.isArray(state?.clips)
-      ? state.clips.filter((clip) => clip && typeof clip.text === "string" && clip.text.trim()).slice(-maxSlots)
-      : [];
+    const groups = normalizeGroups(state, maxSlots);
+    const activeGroupId = groups.some((group) => group.id === state?.activeGroupId)
+      ? state.activeGroupId
+      : groups[0].id;
+
+    const normalizedGroups = groups.map((group) => group.id === activeGroupId && Array.isArray(state?.clips)
+      ? { ...group, clips: normalizeClips(state.clips, maxSlots) }
+      : group);
+    const activeGroup = normalizedGroups.find((group) => group.id === activeGroupId) || normalizedGroups[0];
 
     return {
       enabled: typeof state?.enabled === "boolean" ? state.enabled : DEFAULT_STATE.enabled,
       maxSlots,
       minChars,
       ignoreDuplicates: typeof state?.ignoreDuplicates === "boolean" ? state.ignoreDuplicates : DEFAULT_STATE.ignoreDuplicates,
-      clips: clips.map((clip, index) => ({
-        id: clip.id || createClipId(clip.capturedAt || index),
-        text: clip.text,
-        title: clip.title || "",
-        url: clip.url || "",
-        capturedAt: clip.capturedAt || 0
-      }))
+      activeGroupId,
+      activeGroup,
+      groups: normalizedGroups,
+      clips: activeGroup.clips
     };
+  }
+
+  function normalizeGroups(state, maxSlots) {
+    const storedGroups = Array.isArray(state?.groups)
+      ? state.groups
+      : [];
+    const groups = storedGroups
+      .filter((group) => group && typeof group === "object")
+      .map((group, index) => ({
+        id: String(group.id || createGroupId(index)),
+        name: String(group.name || `Session ${index + 1}`).trim().slice(0, 40) || `Session ${index + 1}`,
+        clips: normalizeClips(group.clips, maxSlots)
+      }))
+      .filter((group) => group.id && group.name);
+
+    if (groups.length) {
+      return groups;
+    }
+
+    return [{
+      id: DEFAULT_STATE.activeGroupId,
+      name: "Default",
+      clips: normalizeClips(state?.clips, maxSlots)
+    }];
+  }
+
+  function normalizeClips(clips, maxSlots) {
+    return Array.isArray(clips)
+      ? clips
+        .filter((clip) => clip && typeof clip.text === "string" && clip.text.trim())
+        .slice(-maxSlots)
+        .map((clip, index) => ({
+          id: clip.id || createClipId(clip.capturedAt || index),
+          text: clip.text,
+          label: String(clip.label || "").trim().slice(0, 60),
+          title: clip.title || "",
+          url: clip.url || "",
+          capturedAt: clip.capturedAt || 0
+        }))
+      : [];
   }
 
   function clampNumber(value, fallback, min, max) {
@@ -493,6 +633,14 @@
 
   function createClipId(seed) {
     return `${seed}-${Math.random().toString(36).slice(2, 10)}`;
+  }
+
+  function createGroupId(seed) {
+    return `group-${seed}-${Math.random().toString(36).slice(2, 10)}`;
+  }
+
+  function isValidClipIndex(clips, index) {
+    return Number.isInteger(index) && index >= 0 && index < clips.length;
   }
 
   function isFromWidget(node) {
