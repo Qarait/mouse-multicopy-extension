@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Mouse MultiCopy",
-  "version": "0.3.0",
-  "description": "Collect highlighted text into numbered slots and paste any slot with the mouse.",
+  "version": "0.4.0",
+  "description": "Collect webpage highlights, keep their source and page, then copy them all in one clean document.",
   "permissions": ["clipboardWrite", "storage"],
   "icons": {
     "16": "icons/icon16.png",

@@ -2,19 +2,24 @@
 
 ## Short Description
 
-Collect highlighted text into numbered slots and paste any saved snippet with the mouse.
+Collect webpage highlights with page and source details, then paste them anywhere in one clean document.
 
 ## Full Description
 
-Mouse MultiCopy is a mouse-first multi-copy tool for people who collect text from web pages.
+Mouse MultiCopy is a simple highlight collector for people who read, research, and take notes from web pages.
 
-Highlight text on a page and Mouse MultiCopy saves it into the next quick slot. Highlight again and it saves the next snippet. When you are ready to paste, open the floating palette or popup and choose slot 1, 2, 3, or any saved slot.
+Highlight text on a page and Mouse MultiCopy saves it as Highlight 1. Highlight again and it saves Highlight 2. A small confirmation shows what was captured. When you are ready, click Copy All Highlights and paste the complete collection into Word, Notepad, email, or another app.
 
-Useful for research, quoting, form filling, note taking, and moving several small pieces of text without repeatedly replacing your clipboard.
+Add an optional page number while reading and choose whether the final output includes page and source details. Numbered, bulleted, and plain paragraph formats are available.
 
 Features:
 
-- Capture highlighted webpage text into numbered slots
+- Capture highlighted webpage text with instant numbered feedback
+- Copy every highlight as one clean, formatted document
+- Add page numbers to new highlights or edit them individually
+- Include or omit page titles and URLs
+- See the saved highlight count on the extension icon
+- Start with a simple interface; open Advanced only when needed
 - Paste a chosen slot into focused text fields and editors
 - Rename slots to describe what each saved snippet is
 - Drag slots to reorder them before pasting
@@ -55,7 +60,7 @@ https://gist.github.com/Qarait/15671558d14faa3e1ed75e4886923f6c
 - `icons/icon128.png`
 - `store-assets/screenshot-1280x800.png`
 - `PRIVACY.md`
-- Distribution ZIP from `dist/mouse-multicopy-0.3.0.zip`
+- Distribution ZIP from `dist/mouse-multicopy-0.4.0.zip`
 
 ## Manual QA Before Submission
 
@@ -63,6 +68,9 @@ https://gist.github.com/Qarait/15671558d14faa3e1ed75e4886923f6c
 - Open a normal webpage, not a `chrome://` page.
 - Highlight three separate text snippets.
 - Confirm the page widget shows `MC 3`.
+- Confirm each capture toast includes its number and a short preview.
+- Set a page number, click Copy All Highlights, and confirm the formatted output includes it.
+- Confirm the toolbar icon badge shows `3`.
 - Focus a textarea or input.
 - Paste slot 2 and confirm the correct snippet appears.
 - Rename a slot and confirm the new name persists after closing and reopening the popup.

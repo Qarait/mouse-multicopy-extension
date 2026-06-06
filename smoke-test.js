@@ -1,6 +1,8 @@
 const { spawn } = require("node:child_process");
+const fs = require("node:fs");
 const http = require("node:http");
 const path = require("node:path");
+const vm = require("node:vm");
 
 const chromePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
 const extensionDir = __dirname;
@@ -13,11 +15,68 @@ main().catch((error) => {
 
 async function main() {
   const workflow = await runWorkflowHarness();
+  const background = await runBackgroundHarness();
   const injection = await runExtensionInjection();
-  const ok = workflow.ok;
+  const ok = workflow.ok && background.ok;
 
-  console.log(JSON.stringify({ ok, workflow, extensionInjectionProbe: injection }, null, 2));
+  console.log(JSON.stringify({ ok, workflow, background, extensionInjectionProbe: injection }, null, 2));
   process.exit(ok ? 0 : 1);
+}
+
+async function runBackgroundHarness() {
+  let storageListener;
+  const badge = {};
+  const chrome = {
+    runtime: {
+      onInstalled: { addListener() {} },
+      onStartup: { addListener() {} },
+      getURL(value) { return value; }
+    },
+    tabs: {
+      create() { return Promise.resolve(); },
+      query() { return Promise.resolve([]); },
+      sendMessage() { return Promise.resolve(); }
+    },
+    commands: {
+      onCommand: { addListener() {} }
+    },
+    storage: {
+      local: {
+        get() { return Promise.resolve({}); }
+      },
+      onChanged: {
+        addListener(listener) {
+          storageListener = listener;
+        }
+      }
+    },
+    action: {
+      async setBadgeBackgroundColor(options) { badge.color = options.color; },
+      async setBadgeText(options) { badge.text = options.text; },
+      async setTitle(options) { badge.title = options.title; }
+    }
+  };
+
+  vm.runInNewContext(
+    fs.readFileSync(path.join(extensionDir, "background.js"), "utf8"),
+    { chrome }
+  );
+
+  storageListener({
+    mouseMultiCopyState: {
+      newValue: {
+        activeGroupId: "reading",
+        groups: [{ id: "reading", clips: [{}, {}, {}] }],
+        clips: [{}, {}, {}]
+      }
+    }
+  }, "local");
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  return {
+    ok: badge.text === "3" && badge.title === "Mouse MultiCopy - 3 saved highlights",
+    badge
+  };
 }
 
 async function runWorkflowHarness() {

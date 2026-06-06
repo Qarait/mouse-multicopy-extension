@@ -4,14 +4,14 @@ Use this file when submitting Mouse MultiCopy to the Chrome Web Store Developer 
 
 ## Submission Status
 
-- Extension package: `dist/mouse-multicopy-0.3.0.zip`
+- Extension package: `dist/mouse-multicopy-0.4.0.zip`
 - Category: Productivity
 - Visibility recommendation for first review: Unlisted
 - Final manual QA required: Yes
 
 ## Single Purpose
 
-Mouse MultiCopy has one narrow purpose: collect highlighted webpage text into local numbered slots and paste a chosen slot into a focused text field.
+Mouse MultiCopy has one narrow purpose: collect text the user intentionally highlights on webpages and let the user copy or paste those saved highlights.
 
 ## Permissions
 
@@ -19,8 +19,8 @@ Declare and justify these permissions in the Privacy practices tab.
 
 ### `storage`
 
-Stores the user's saved text snippets, quick-slot count, minimum capture length, duplicate-protection setting, and collect-mode state locally in browser extension storage.
-It also stores slot names, slot order, and local session/group names.
+Stores the user's saved highlights, optional page numbers, output format, highlight limit, minimum capture length, duplicate-protection setting, and collect-mode state locally in browser extension storage.
+It also stores highlight names, order, local session/group names, page titles, and page URLs.
 
 ### `clipboardWrite`
 
@@ -71,7 +71,7 @@ Use `STORE_LISTING.md` for the short description, full description, category, pr
 
 ## Upload Assets
 
-- Package: `dist/mouse-multicopy-0.3.0.zip`
+- Package: `dist/mouse-multicopy-0.4.0.zip`
 - Icon: `icons/icon128.png`
 - Screenshot: `store-assets/screenshot-1280x800.png`
 - Privacy policy: public URL based on `PRIVACY.md`
@@ -82,17 +82,21 @@ Use `STORE_LISTING.md` for the short description, full description, category, pr
 2. Open `manual-test.html` through a local HTTP server or use any normal webpage with selectable text and a textarea.
 3. Highlight `Alpha selection`, `Beta selection`, and `Gamma selection`.
 4. Confirm the floating button shows `MC 3`.
-5. Open the palette and paste slot 2 into a textarea.
-6. Rename a slot and confirm the label persists.
-7. Drag a slot to a new position and confirm the order persists.
-8. Create a second session, switch sessions, and confirm each session has separate clips.
-9. Fill the configured quick slots, capture one extra snippet, and confirm the toast says slot 1 was replaced.
-10. Test a CodeMirror or Monaco-style editor and confirm the extension copies to clipboard with a `Ctrl+V` fallback message.
-11. Confirm duplicate highlighting does not add another copy when duplicate protection is on.
-12. Confirm short selections below the minimum length are ignored.
-13. Confirm Undo removes the latest captured slot.
-14. Confirm individual slot Delete works.
-15. Open the popup and confirm settings persist.
+5. Confirm each toast shows the highlight number and a short text preview.
+6. Enter page `42`, capture another highlight, and confirm it inherits that page.
+7. Click Copy All Highlights and confirm numbered output includes the page, title, and URL.
+8. Toggle Page and Source off and confirm the copied output omits them.
+9. Open the palette and paste slot 2 into a textarea.
+10. Open Advanced, rename a highlight, and confirm the label persists.
+11. Drag a highlight to a new position and confirm the order persists.
+12. Create a second session, switch sessions, and confirm each session has separate clips.
+13. Fill the configured highlight limit, capture one extra snippet, and confirm the toast says slot 1 was replaced.
+14. Test a CodeMirror or Monaco-style editor and confirm the extension copies to clipboard with a `Ctrl+V` fallback message.
+15. Confirm duplicate highlighting does not add another copy when duplicate protection is on.
+16. Confirm short selections below the minimum length are ignored.
+17. Confirm Undo removes the latest captured slot.
+18. Confirm individual Delete works.
+19. Confirm the toolbar badge count follows the active session.
 
 ## Likely Review Questions
 

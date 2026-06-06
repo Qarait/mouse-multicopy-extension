@@ -11,7 +11,7 @@
       <header>
         <div>
           <h1>Mouse MultiCopy</h1>
-          <p id="summary">0 of 12 slots used</p>
+          <p id="summary">No highlights saved</p>
         </div>
         <label class="switch">
           <input id="enabled" type="checkbox">
@@ -19,35 +19,71 @@
         </label>
       </header>
 
-      <section class="controls" aria-label="Actions">
-        <button id="capture" type="button">Capture Selection</button>
-        <button id="clear" type="button">Clear</button>
+      <section class="page-control" aria-label="Page number">
+        <label for="currentPage">Page for new highlights</label>
+        <input id="currentPage" type="text" maxlength="40" placeholder="Optional, e.g. 42">
       </section>
 
-      <section class="groups" aria-label="Slot sessions">
-        <label for="groupSelect">Session</label>
-        <select id="groupSelect"></select>
-        <button id="newGroup" type="button">New</button>
-        <button id="renameGroup" type="button">Rename</button>
-        <button id="deleteGroup" type="button">Delete</button>
+      <section id="emptyState" class="empty-state">
+        <strong>Start reading.</strong>
+        <span>Highlight text on a webpage and it will appear here.</span>
       </section>
 
-      <section class="settings" aria-label="Capture settings">
-        <label for="maxSlots">
-          Quick slots
-          <input id="maxSlots" type="number" min="3" max="50" step="1">
+      <section id="highlights" aria-label="Saved highlights"></section>
+
+      <button id="copyAll" class="primary" type="button">Copy All Highlights</button>
+
+      <section class="format-controls" aria-label="Copy format">
+        <label for="outputFormat">Format</label>
+        <select id="outputFormat">
+          <option value="numbered">Numbered</option>
+          <option value="bullets">Bullets</option>
+          <option value="plain">Plain paragraphs</option>
+        </select>
+        <label class="checkbox" for="includePage">
+          <input id="includePage" type="checkbox">
+          <span>Page</span>
         </label>
-        <label for="minChars">
-          Min chars
-          <input id="minChars" type="number" min="1" max="40" step="1">
-        </label>
-        <label class="checkbox" for="ignoreDuplicates">
-          <input id="ignoreDuplicates" type="checkbox">
-          <span>Skip duplicates</span>
+        <label class="checkbox" for="includeSource">
+          <input id="includeSource" type="checkbox">
+          <span>Source</span>
         </label>
       </section>
 
-      <section id="slots" aria-label="Saved slots"></section>
+      <details id="advanced">
+        <summary>Advanced</summary>
+
+        <section class="advanced-actions" aria-label="Actions">
+          <button id="capture" type="button">Capture Selection</button>
+          <button id="clear" type="button">Clear Session</button>
+        </section>
+
+        <section class="groups" aria-label="Highlight sessions">
+          <label for="groupSelect">Session</label>
+          <select id="groupSelect"></select>
+          <button id="newGroup" type="button">New</button>
+          <button id="renameGroup" type="button">Rename</button>
+          <button id="deleteGroup" type="button">Delete</button>
+        </section>
+
+        <section class="settings" aria-label="Capture settings">
+          <label for="maxSlots">
+            Highlight limit
+            <input id="maxSlots" type="number" min="3" max="50" step="1">
+          </label>
+          <label for="minChars">
+            Min chars
+            <input id="minChars" type="number" min="1" max="40" step="1">
+          </label>
+          <label class="checkbox" for="ignoreDuplicates">
+            <input id="ignoreDuplicates" type="checkbox">
+            <span>Skip duplicates</span>
+          </label>
+        </section>
+
+        <section id="slots" aria-label="Advanced slot controls"></section>
+      </details>
+
       <p id="message" role="status" aria-live="polite"></p>
     </main>
     <script src="popup.js"></script>

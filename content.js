@@ -5,6 +5,10 @@
     maxSlots: 12,
     minChars: 3,
     ignoreDuplicates: true,
+    currentPage: "",
+    outputFormat: "numbered",
+    includeSource: true,
+    includePage: true,
     activeGroupId: "default",
     groups: [],
     clips: []
@@ -168,7 +172,7 @@
     }
 
     clearTimeout(captureTimer);
-    captureTimer = setTimeout(() => captureCurrentSelection({ manual: false }), 140);
+    captureTimer = setTimeout(() => captureCurrentSelection({ manual: false }), 80);
   }
 
   async function captureCurrentSelection({ manual }) {
@@ -214,6 +218,7 @@
       label: "",
       title: document.title || "",
       url: location.href,
+      page: state.currentPage,
       capturedAt: now
     };
 
@@ -222,9 +227,10 @@
     await setState({ ...state, clips: nextClips });
     lastUndoClipId = clip.id;
     const slotNumber = nextClips.findIndex((nextClip) => nextClip.id === clip.id) + 1;
+    const preview = createPreview(text, 54);
     const message = replacedClip
-      ? `Slot 1 was replaced. New capture saved in slot ${slotNumber}.`
-      : `Captured slot ${slotNumber}.`;
+      ? `Highlight ${slotNumber} saved - "${preview}". Slot 1 was replaced.`
+      : `Highlight ${slotNumber} saved - "${preview}"`;
     showToast(message, { undoClipId: clip.id });
     widget.classList.add("mmc-open");
     return true;
@@ -325,7 +331,7 @@
 
   async function copyAll() {
     const state = await getState();
-    const text = state.clips.map((clip) => clip.text).join("\n");
+    const text = formatClips(state.clips, state);
 
     if (!text) {
       showToast("No clips to copy yet.");
@@ -333,7 +339,7 @@
     }
 
     await copyToClipboard(text);
-    showToast("Copied all slots to clipboard.");
+    showToast(`Copied ${state.clips.length} highlight${state.clips.length === 1 ? "" : "s"}.`);
   }
 
   async function clearClips() {
@@ -567,6 +573,12 @@
       maxSlots,
       minChars,
       ignoreDuplicates: typeof state?.ignoreDuplicates === "boolean" ? state.ignoreDuplicates : DEFAULT_STATE.ignoreDuplicates,
+      currentPage: String(state?.currentPage || "").trim().slice(0, 40),
+      outputFormat: ["numbered", "bullets", "plain"].includes(state?.outputFormat)
+        ? state.outputFormat
+        : DEFAULT_STATE.outputFormat,
+      includeSource: typeof state?.includeSource === "boolean" ? state.includeSource : DEFAULT_STATE.includeSource,
+      includePage: typeof state?.includePage === "boolean" ? state.includePage : DEFAULT_STATE.includePage,
       activeGroupId,
       activeGroup,
       groups: normalizedGroups,
@@ -609,6 +621,7 @@
           label: String(clip.label || "").trim().slice(0, 60),
           title: clip.title || "",
           url: clip.url || "",
+          page: String(clip.page || "").trim().slice(0, 40),
           capturedAt: clip.capturedAt || 0
         }))
       : [];
@@ -629,6 +642,35 @@
 
   function normalizeText(text) {
     return String(text || "").trim().replace(/\s+/g, " ");
+  }
+
+  function createPreview(text, maxLength) {
+    const normalized = normalizeText(text);
+    return normalized.length > maxLength
+      ? `${normalized.slice(0, maxLength - 3)}...`
+      : normalized;
+  }
+
+  function formatClips(clips, state) {
+    return clips.map((clip, index) => {
+      const sourceParts = [];
+      if (state.includeSource && clip.title) {
+        sourceParts.push(clip.title);
+      }
+      if (state.includeSource && clip.url) {
+        sourceParts.push(clip.url);
+      }
+
+      const page = state.includePage && clip.page ? ` (page ${clip.page})` : "";
+      const source = sourceParts.length ? `\n   Source: ${sourceParts.join(" | ")}` : "";
+      if (state.outputFormat === "plain") {
+        return `${clip.text}${page}${source}`;
+      }
+      if (state.outputFormat === "bullets") {
+        return `- ${clip.text}${page}${source}`;
+      }
+      return `${index + 1}. ${clip.text}${page}${source}`;
+    }).join("\n\n");
   }
 
   function createClipId(seed) {

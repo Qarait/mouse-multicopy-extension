@@ -124,6 +124,10 @@
               maxSlots: 3,
               minChars: 3,
               ignoreDuplicates: true,
+              currentPage: "42",
+              outputFormat: "numbered",
+              includeSource: true,
+              includePage: true,
               clips: []
             }
           });
@@ -150,6 +154,9 @@
 
           if (!state || state.clips.length !== 3) {
             throw new Error(`Expected 3 clips, got ${state?.clips.length || 0}`);
+          }
+          if (state.clips.some((clip) => clip.page !== "42")) {
+            throw new Error("Expected new captures to inherit the current page.");
           }
 
           selectPhrase("Delta selection");
@@ -227,10 +234,23 @@
             throw new Error("Expected legacy clips to migrate into the default group.");
           }
 
+          document.getElementById("mmc-copy-all").click();
+          await wait(120);
+
+          const formatted = window.__mmcTest.getClipboardText();
+          if (
+            !formatted.includes("1. Delta selection") ||
+            !formatted.includes("page 42") ||
+            !formatted.includes("Mouse MultiCopy Automated Test")
+          ) {
+            throw new Error(`Expected formatted Copy All output, got: ${formatted}`);
+          }
+
           result.textContent = JSON.stringify({
             status: "pass",
             clips: afterReorder.clips.map((clip) => clip.text),
-            pasted: target.value
+            pasted: target.value,
+            formatted
           });
           document.body.dataset.testStatus = "pass";
         } catch (error) {

@@ -4,203 +4,201 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mouse MultiCopy Store Screenshot</title>
-    <link rel="stylesheet" href="../content.css">
     <style>
+      * { box-sizing: border-box; }
       body {
         margin: 0;
-        background: #eef2f7;
-        color: #111827;
+        background: #eef2ef;
+        color: #17201b;
         font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         letter-spacing: 0;
-        overflow: hidden;
       }
-
       .page {
-        box-sizing: border-box;
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 360px;
-        gap: 34px;
+        grid-template-columns: minmax(0, 1fr) 390px;
+        gap: 38px;
         height: 800px;
-        padding: 48px;
+        padding: 46px 54px;
       }
-
-      .article,
-      .composer {
-        border: 1px solid rgba(17, 24, 39, 0.1);
+      .reader {
+        padding: 42px 48px;
+        border: 1px solid rgba(23, 32, 27, 0.1);
         border-radius: 8px;
         background: #fff;
-        box-shadow: 0 14px 34px rgba(17, 24, 39, 0.08);
+        box-shadow: 0 18px 44px rgba(23, 32, 27, 0.08);
       }
-
-      .article {
-        padding: 34px;
+      .eyebrow {
+        margin-bottom: 16px;
+        color: #166534;
+        font-size: 13px;
+        font-weight: 800;
+        text-transform: uppercase;
       }
-
-      .composer {
-        align-self: start;
-        padding: 20px;
-      }
-
       h1 {
         max-width: 720px;
-        margin: 0 0 18px;
-        font-size: 44px;
-        line-height: 1.05;
+        margin: 0 0 22px;
+        font-size: 43px;
+        line-height: 1.08;
       }
-
-      h2 {
-        margin: 0 0 12px;
-        font-size: 18px;
+      .reader p {
+        max-width: 720px;
+        margin: 0 0 20px;
+        color: #425047;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 20px;
+        line-height: 1.65;
       }
-
-      p {
-        max-width: 780px;
-        margin: 0 0 18px;
-        color: #374151;
-        font-size: 18px;
-        line-height: 1.55;
-      }
-
       mark {
-        border-radius: 4px;
-        background: #bfdbfe;
-        color: #111827;
-        padding: 2px 4px;
+        border-radius: 3px;
+        background: #bbf7d0;
+        color: #17201b;
+        padding: 2px 3px;
       }
-
-      textarea {
-        width: 100%;
-        min-height: 220px;
-        padding: 12px;
-        border: 1px solid #cbd5e1;
-        border-radius: 8px;
-        font: inherit;
-        line-height: 1.45;
-        resize: none;
-      }
-
-      .caption {
-        margin-top: 10px;
-        color: #6b7280;
+      .toast {
+        display: inline-flex;
+        margin-top: 12px;
+        padding: 10px 13px;
+        border-radius: 7px;
+        background: #17201b;
+        color: #fff;
         font-size: 13px;
+        box-shadow: 0 12px 30px rgba(23, 32, 27, 0.2);
       }
-
-      #mmc-widget {
-        right: 48px;
-        bottom: 42px;
+      .popup {
+        align-self: center;
+        padding: 18px;
+        border: 1px solid rgba(23, 32, 27, 0.13);
+        border-radius: 8px;
+        background: #f5f7f6;
+        box-shadow: 0 22px 56px rgba(23, 32, 27, 0.18);
       }
-
-      #mmc-panel {
-        display: block;
+      .header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 14px;
       }
-
-      #mmc-toggle {
-        display: none;
+      h2 { margin: 0 0 3px; font-size: 20px; }
+      .summary { color: #59645d; font-size: 12px; }
+      .collect { font-size: 12px; font-weight: 800; }
+      .page-input {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        padding: 10px;
+        border: 1px solid rgba(23, 32, 27, 0.1);
+        border-radius: 8px;
+        background: #fff;
+        font-size: 12px;
+        font-weight: 750;
+      }
+      .page-value {
+        width: 80px;
+        padding: 7px 9px;
+        border: 1px solid rgba(23, 32, 27, 0.16);
+        border-radius: 7px;
+        background: #fff;
+      }
+      .highlight {
+        display: grid;
+        grid-template-columns: 28px minmax(0, 1fr) 56px;
+        gap: 8px;
+        align-items: start;
+        margin-bottom: 7px;
+        padding: 9px;
+        border: 1px solid rgba(23, 32, 27, 0.1);
+        border-radius: 8px;
+        background: #fff;
+      }
+      .number {
+        display: grid;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        background: #17201b;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .text { color: #354139; font-size: 12px; line-height: 1.35; }
+      .source { display: block; margin-top: 4px; color: #79837c; font-size: 10px; }
+      .page-tag { color: #59645d; font-size: 11px; text-align: right; }
+      .copy-all {
+        width: 100%;
+        margin-top: 4px;
+        padding: 12px;
+        border: 1px solid #166534;
+        border-radius: 7px;
+        background: #166534;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 800;
+      }
+      .format {
+        margin-top: 9px;
+        color: #59645d;
+        font-size: 11px;
+        text-align: center;
+      }
+      .advanced {
+        margin-top: 12px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(23, 32, 27, 0.12);
+        color: #59645d;
+        font-size: 12px;
+        font-weight: 800;
       }
     </style>
   </head>
   <body>
     <main class="page">
-      <article class="article">
-        <h1>Collect highlighted text into numbered paste slots</h1>
+      <article class="reader">
+        <div class="eyebrow">Reading with Mouse MultiCopy</div>
+        <h1>Highlight as you read. Paste everything when you are done.</h1>
         <p>
-          Mouse MultiCopy turns repeated research copying into a faster selection flow.
-          Highlight <mark>key phrase one</mark>, then highlight <mark>key phrase two</mark>,
-          then highlight <mark>key phrase three</mark>.
+          Careful reading is an active process. <mark>The strongest notes preserve both
+          the original idea and enough context to find it again.</mark>
         </p>
         <p>
-          The snippets stay in quick slots, so a user can paste slot 1, 2, 3,
-          or copy everything together without digging through clipboard history.
+          A useful collection should stay out of the way while you read, then become
+          organized at the moment you need it. <mark>Page numbers and sources turn loose
+          quotations into usable research.</mark>
         </p>
-        <p>
-          Text stays local in browser extension storage. The prototype does not send
-          copied text to a server.
-        </p>
+        <div class="toast">Highlight 3 saved - "Page numbers and sources turn loose..."</div>
       </article>
 
-      <aside class="composer">
-        <h2>Paste target</h2>
-        <textarea>Slot 2 pasted here:
-key phrase two</textarea>
-        <div class="caption">Click any saved slot to paste that exact snippet.</div>
+      <aside class="popup">
+        <div class="header">
+          <div>
+            <h2>Mouse MultiCopy</h2>
+            <div class="summary">3 saved highlights in Book Notes</div>
+          </div>
+          <div class="collect">Collect: On</div>
+        </div>
+        <div class="page-input">
+          <span>Page for new highlights</span>
+          <span class="page-value">42</span>
+        </div>
+        <div class="highlight">
+          <span class="number">1</span>
+          <span class="text">The strongest notes preserve both the original idea...<span class="source">The Art of Reading</span></span>
+          <span class="page-tag">page 41</span>
+        </div>
+        <div class="highlight">
+          <span class="number">2</span>
+          <span class="text">A useful collection should stay out of the way...<span class="source">The Art of Reading</span></span>
+          <span class="page-tag">page 42</span>
+        </div>
+        <div class="highlight">
+          <span class="number">3</span>
+          <span class="text">Page numbers and sources turn loose quotations...<span class="source">The Art of Reading</span></span>
+          <span class="page-tag">page 42</span>
+        </div>
+        <button class="copy-all" type="button">Copy All Highlights</button>
+        <div class="format">Numbered | Page on | Source on</div>
+        <div class="advanced">Advanced</div>
       </aside>
     </main>
-
-    <div id="mmc-widget" class="mmc-open">
-      <div id="mmc-panel" aria-label="Mouse MultiCopy slots">
-        <div id="mmc-header">
-          <div id="mmc-title">Mouse MultiCopy - Research</div>
-          <div id="mmc-status">3 / 12</div>
-        </div>
-        <div id="mmc-slots">
-          <div class="mmc-slot">
-            <button class="mmc-slot-main" type="button">
-              <span class="mmc-number">1</span>
-              <span class="mmc-body">
-                <span class="mmc-label">Defendant</span>
-                <span class="mmc-preview">key phrase one</span>
-              </span>
-            </button>
-            <button class="mmc-delete" type="button">x</button>
-          </div>
-          <div class="mmc-slot">
-            <button class="mmc-slot-main" type="button">
-              <span class="mmc-number">2</span>
-              <span class="mmc-body">
-                <span class="mmc-label">Quote</span>
-                <span class="mmc-preview">key phrase two</span>
-              </span>
-            </button>
-            <button class="mmc-delete" type="button">x</button>
-          </div>
-          <div class="mmc-slot">
-            <button class="mmc-slot-main" type="button">
-              <span class="mmc-number">3</span>
-              <span class="mmc-body">
-                <span class="mmc-label">Case number</span>
-                <span class="mmc-preview">key phrase three</span>
-              </span>
-            </button>
-            <button class="mmc-delete" type="button">x</button>
-          </div>
-          <div class="mmc-slot mmc-empty">
-            <button class="mmc-slot-main" type="button" disabled>
-              <span class="mmc-number">4</span>
-              <span class="mmc-body">
-                <span class="mmc-label">Slot 4</span>
-                <span class="mmc-preview">Empty</span>
-              </span>
-            </button>
-            <button class="mmc-delete" type="button" disabled>x</button>
-          </div>
-          <div class="mmc-slot mmc-empty">
-            <button class="mmc-slot-main" type="button" disabled>
-              <span class="mmc-number">5</span>
-              <span class="mmc-body">
-                <span class="mmc-label">Slot 5</span>
-                <span class="mmc-preview">Empty</span>
-              </span>
-            </button>
-            <button class="mmc-delete" type="button" disabled>x</button>
-          </div>
-          <div class="mmc-slot mmc-empty">
-            <button class="mmc-slot-main" type="button" disabled>
-              <span class="mmc-number">6</span>
-              <span class="mmc-body">
-                <span class="mmc-label">Slot 6</span>
-                <span class="mmc-preview">Empty</span>
-              </span>
-            </button>
-            <button class="mmc-delete" type="button" disabled>x</button>
-          </div>
-        </div>
-        <div id="mmc-actions">
-          <button class="mmc-action" type="button">Pause</button>
-          <button class="mmc-action" type="button">Copy All</button>
-          <button class="mmc-action" type="button">Clear</button>
-        </div>
-      </div>
-      <button id="mmc-toggle" type="button" data-enabled="true">MC 3</button>
-    </div>
   </body>
 </html>
