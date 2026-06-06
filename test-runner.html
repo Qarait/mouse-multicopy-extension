@@ -170,12 +170,42 @@
           ) {
             throw new Error("Expected the compact saved-highlights palette.");
           }
+          const widget = document.getElementById("mmc-widget");
+          const expandButton = document.getElementById("mmc-expand");
+          const collapseButton = document.getElementById("mmc-collapse");
+          expandButton.click();
+          await wait(50);
+          if (
+            !widget.classList.contains("mmc-expanded") ||
+            expandButton.getAttribute("aria-expanded") !== "true" ||
+            expandButton.getAttribute("aria-label") !== "Contract highlights panel"
+          ) {
+            throw new Error("Expected the expand control to open the wider highlights view.");
+          }
+          expandButton.click();
+          await wait(50);
+          if (
+            widget.classList.contains("mmc-expanded") ||
+            expandButton.getAttribute("aria-expanded") !== "false"
+          ) {
+            throw new Error("Expected the expand control to contract the highlights view.");
+          }
+          collapseButton.click();
+          await wait(50);
+          if (widget.classList.contains("mmc-open")) {
+            throw new Error("Expected close to collapse the panel without removing the MC button.");
+          }
+          document.getElementById("mmc-toggle").click();
+          await wait(50);
+          if (!widget.classList.contains("mmc-open")) {
+            throw new Error("Expected the MC button to reopen the collapsed panel.");
+          }
           const options = document.getElementById("mmc-options");
           options.open = true;
           options.dispatchEvent(new Event("toggle"));
           await wait(50);
           if (
-            !document.getElementById("mmc-widget").classList.contains("mmc-options-open") ||
+            !widget.classList.contains("mmc-options-open") ||
             getComputedStyle(document.querySelector(".mmc-item-actions")).display !== "grid" ||
             document.querySelectorAll(".mmc-copy").length !== 3 ||
             document.querySelectorAll(".mmc-paste").length !== 3 ||
@@ -281,12 +311,26 @@
 
           options.open = true;
           options.dispatchEvent(new Event("toggle"));
+          expandButton.click();
+          await wait(180);
+          const widgetBounds = widget.getBoundingClientRect();
+          if (
+            !widget.classList.contains("mmc-expanded") ||
+            widgetBounds.left < 0 ||
+            widgetBounds.right > window.innerWidth ||
+            widget.scrollWidth > widget.clientWidth
+          ) {
+            throw new Error("Expected the expanded panel to remain within the viewport.");
+          }
 
           result.textContent = JSON.stringify({
             status: "pass",
             clips: afterReorder.clips.map((clip) => clip.text),
             pasted: target.value,
-            copiedAll
+            copiedAll,
+            expanded: widget.classList.contains("mmc-expanded"),
+            widgetWidth: Math.round(widgetBounds.width),
+            viewportWidth: window.innerWidth
           });
           document.body.dataset.testStatus = "pass";
         } catch (error) {

@@ -82,6 +82,16 @@
       }
       h2 { margin: 0 0 3px; font-size: 20px; }
       .summary { color: #59645d; font-size: 12px; }
+      .window-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .window-icon {
+        color: #59645d;
+        font-size: 15px;
+        font-weight: 800;
+      }
       .collect { font-size: 12px; font-weight: 800; }
       .highlight {
         display: grid;
@@ -163,7 +173,11 @@
         <div class="palette">
           <div class="header">
             <h2>Highlights</h2>
-            <div class="summary">3 saved</div>
+            <div class="window-controls">
+              <div class="summary">3 saved</div>
+              <span class="window-icon">&#x2922;</span>
+              <span class="window-icon">&times;</span>
+            </div>
           </div>
           <div class="highlight">
             <span class="number">1</span>

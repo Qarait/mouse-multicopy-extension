@@ -15,6 +15,10 @@
   pointer-events: auto;
 }
 
+#mmc-widget.mmc-expanded {
+  width: min(560px, calc(100vw - 32px));
+}
+
 #mmc-panel {
   display: none;
   margin-bottom: 8px;
@@ -47,10 +51,40 @@
   white-space: nowrap;
 }
 
+#mmc-header-right {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 5px;
+}
+
 #mmc-status {
   color: #59645d;
   font-size: 12px;
   white-space: nowrap;
+}
+
+.mmc-header-button {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  min-height: 26px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: #59645d;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.mmc-header-button:hover {
+  border-color: rgba(23, 32, 27, 0.14);
+  background: #f3f5f4;
+  color: #17201b;
 }
 
 #mmc-empty {
@@ -73,6 +107,10 @@
   max-height: 320px;
   padding: 10px;
   overflow: auto;
+}
+
+#mmc-widget.mmc-expanded #mmc-slots {
+  max-height: 520px;
 }
 
 #mmc-slots:empty {
@@ -133,6 +171,10 @@
   overflow-wrap: anywhere;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+}
+
+#mmc-widget.mmc-expanded .mmc-preview {
+  -webkit-line-clamp: 4;
 }
 
 .mmc-item-actions {
@@ -276,6 +318,10 @@
   #mmc-widget {
     right: 10px;
     bottom: 10px;
+    width: calc(100vw - 20px);
+  }
+
+  #mmc-widget.mmc-expanded {
     width: calc(100vw - 20px);
   }
 

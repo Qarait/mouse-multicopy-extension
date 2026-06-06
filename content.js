@@ -65,7 +65,11 @@
       <div id="mmc-panel" aria-label="Saved highlights">
         <div id="mmc-header">
           <div id="mmc-title">Highlights</div>
-          <div id="mmc-status">0 saved</div>
+          <div id="mmc-header-right">
+            <div id="mmc-status">0 saved</div>
+            <button id="mmc-expand" class="mmc-header-button" type="button" aria-label="Expand highlights panel" aria-expanded="false" title="Expand panel">&#x2922;</button>
+            <button id="mmc-collapse" class="mmc-header-button" type="button" aria-label="Collapse highlights panel" title="Collapse to MC button">&times;</button>
+          </div>
         </div>
         <div id="mmc-empty">Highlight text on the page to begin.</div>
         <div id="mmc-slots"></div>
@@ -93,13 +97,23 @@
     undoButton = widget.querySelector("#mmc-undo");
     enabledButton = widget.querySelector("#mmc-enabled");
     const options = widget.querySelector("#mmc-options");
+    const expandButton = widget.querySelector("#mmc-expand");
+    const collapseButton = widget.querySelector("#mmc-collapse");
 
     widget.addEventListener("mousedown", (event) => {
-      if (!event.target.closest(".mmc-slot, #mmc-options, #mmc-copy-all, #mmc-toggle, #mmc-undo")) {
+      if (!event.target.closest(".mmc-slot, #mmc-options, #mmc-copy-all, #mmc-toggle, #mmc-undo, .mmc-header-button")) {
         event.preventDefault();
       }
     });
     toggleButton.addEventListener("click", () => widget.classList.toggle("mmc-open"));
+    expandButton.addEventListener("click", () => {
+      const expanded = widget.classList.toggle("mmc-expanded");
+      expandButton.setAttribute("aria-expanded", String(expanded));
+      expandButton.setAttribute("aria-label", expanded ? "Contract highlights panel" : "Expand highlights panel");
+      expandButton.title = expanded ? "Contract panel" : "Expand panel";
+      expandButton.textContent = expanded ? "\u2921" : "\u2922";
+    });
+    collapseButton.addEventListener("click", () => widget.classList.remove("mmc-open"));
     undoButton.addEventListener("click", undoLastCapture);
     enabledButton.addEventListener("click", toggleEnabled);
     widget.querySelector("#mmc-copy-all").addEventListener("click", copyAll);

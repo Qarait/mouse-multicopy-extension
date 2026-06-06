@@ -61,7 +61,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File mouse-multicopy-extension\sc
 The upload package is created at:
 
 ```text
-mouse-multicopy-extension\dist\mouse-multicopy-0.5.1.zip
+mouse-multicopy-extension\dist\mouse-multicopy-0.5.2.zip
 ```
 
 The package contains only the runtime extension files, not tests or draft store docs.
@@ -82,6 +82,7 @@ The package contains only the runtime extension files, not tests or draft store 
 - Open Options only when you want page numbers, source details, or special formatting.
 - The extension icon badge shows the current number of saved highlights.
 - Click the `MC` button at the bottom-right of the page to open saved highlights.
+- Use the header expand icon for a wider reading view, or `x` to collapse back to the `MC` button.
 - The floating palette shows only captured highlights, with no empty placeholders.
 - Click `Copy All N` to copy every paragraph and paste once anywhere.
 - Open Options to copy, paste, or delete an individual highlight, pause collection, or clear the list.
