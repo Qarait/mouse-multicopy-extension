@@ -61,28 +61,35 @@ powershell -NoProfile -ExecutionPolicy Bypass -File mouse-multicopy-extension\sc
 The upload package is created at:
 
 ```text
-mouse-multicopy-extension\dist\mouse-multicopy-0.4.2.zip
+mouse-multicopy-extension\dist\mouse-multicopy-0.5.0.zip
 ```
 
 The package contains only the runtime extension files, not tests or draft store docs.
 
+## Architecture
+
+- `state.js` is the single source of truth for defaults, migration, normalization, groups, and clip validation.
+- `clipboard.js` provides one clipboard API with a document-copy fallback for both the popup and webpage palette.
+- `content.js` owns webpage capture, the floating Highlights palette, and direct insertion.
+- `popup.js` owns the extension popup and detailed output controls.
+
 ## Use
 
 - Collect mode is on by default.
-- Highlight text with the mouse to capture it into the next slot.
+- Highlight text with the mouse to capture it as the next highlight.
 - Open the popup and click `Copy All` to copy every saved paragraph as clean plain text.
 - Paste once anywhere with `Ctrl+V`.
 - Open Options only when you want page numbers, source details, or special formatting.
 - The extension icon badge shows the current number of saved highlights.
-- Click the `MC` button at the bottom-right of the page to open slots.
-- Click a numbered slot to paste it into the focused text field.
-- If no text field is focused, the slot is copied to the system clipboard instead.
-- Double-click a slot name to rename it.
-- Drag slots to reorder them before pasting.
-- Use sessions to keep separate slot sets for different tasks.
+- Click the `MC` button at the bottom-right of the page to open saved highlights.
+- The floating palette shows only captured highlights, with no empty placeholders.
+- Click `Copy All N` to copy every paragraph and paste once anywhere.
+- Open Options to paste or delete an individual highlight, pause collection, or clear the list.
+- Double-click a highlight name to rename it, or drag highlights to reorder them while Options is open.
+- Use sessions to keep separate highlight sets for different tasks.
 - Use undo after accidental captures.
 - If the quick-slot list is full, the extension warns when slot 1 is replaced.
-- Delete individual slots from the page palette or popup.
+- Delete individual highlights from the page palette or popup.
 - Open Options in the popup to pause collection, manually capture, copy with details, clear, manage sessions, set the highlight limit, set minimum capture length, or disable duplicate protection.
 
 ## Shortcuts
@@ -108,6 +115,8 @@ Run the smoke test:
 ```powershell
 node mouse-multicopy-extension\smoke-test.js
 ```
+
+The test discovers Chrome on Windows, macOS, and common Linux installations, and uses the operating system temporary directory. Set `CHROME_PATH` when Chrome is installed elsewhere.
 
 The test drives the content script with mocked Chrome extension APIs and verifies this path:
 

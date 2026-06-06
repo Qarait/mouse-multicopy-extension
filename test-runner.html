@@ -85,6 +85,8 @@
         });
       })();
     </script>
+    <script src="state.js"></script>
+    <script src="clipboard.js"></script>
     <script src="content.js"></script>
     <script>
       const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -158,6 +160,28 @@
           if (state.clips.some((clip) => clip.page !== "42")) {
             throw new Error("Expected new captures to inherit the current page.");
           }
+          if (
+            document.getElementById("mmc-title").textContent !== "Highlights" ||
+            document.getElementById("mmc-status").textContent !== "3 saved" ||
+            document.querySelectorAll(".mmc-slot").length !== 3 ||
+            document.querySelector(".mmc-empty") ||
+            document.getElementById("mmc-copy-all").textContent !== "Copy All 3" ||
+            document.getElementById("mmc-options").open
+          ) {
+            throw new Error("Expected the compact saved-highlights palette.");
+          }
+          const options = document.getElementById("mmc-options");
+          options.open = true;
+          options.dispatchEvent(new Event("toggle"));
+          await wait(50);
+          if (
+            !document.getElementById("mmc-widget").classList.contains("mmc-options-open") ||
+            getComputedStyle(document.querySelector(".mmc-item-actions")).display !== "flex"
+          ) {
+            throw new Error("Expected individual controls to appear under Options.");
+          }
+          options.open = false;
+          options.dispatchEvent(new Event("toggle"));
 
           selectPhrase("Delta selection");
           await wait(250);
@@ -237,20 +261,16 @@
           document.getElementById("mmc-copy-all").click();
           await wait(120);
 
-          const formatted = window.__mmcTest.getClipboardText();
-          if (
-            !formatted.includes("1. Delta selection") ||
-            !formatted.includes("page 42") ||
-            !formatted.includes("Mouse MultiCopy Automated Test")
-          ) {
-            throw new Error(`Expected formatted Copy All output, got: ${formatted}`);
+          const copiedAll = window.__mmcTest.getClipboardText();
+          if (copiedAll !== "Delta selection\n\nGamma selection") {
+            throw new Error(`Expected plain Copy All output, got: ${copiedAll}`);
           }
 
           result.textContent = JSON.stringify({
             status: "pass",
             clips: afterReorder.clips.map((clip) => clip.text),
             pasted: target.value,
-            formatted
+            copiedAll
           });
           document.body.dataset.testStatus = "pass";
         } catch (error) {

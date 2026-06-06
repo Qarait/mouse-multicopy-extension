@@ -66,6 +66,9 @@
       }
       .popup {
         align-self: center;
+        background: transparent;
+      }
+      .palette {
         padding: 18px;
         border: 1px solid rgba(23, 32, 27, 0.13);
         border-radius: 8px;
@@ -127,6 +130,16 @@
         font-size: 12px;
         font-weight: 800;
       }
+      .mc-toggle {
+        margin-top: 9px;
+        padding: 11px;
+        border-radius: 7px;
+        background: #17201b;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 800;
+        text-align: center;
+      }
     </style>
   </head>
   <body>
@@ -147,28 +160,28 @@
       </article>
 
       <aside class="popup">
-        <div class="header">
-          <div>
-            <h2>Mouse MultiCopy</h2>
-            <div class="summary">3 saved highlights</div>
+        <div class="palette">
+          <div class="header">
+            <h2>Highlights</h2>
+            <div class="summary">3 saved</div>
           </div>
-          <div class="collect">Collect: On</div>
+          <div class="highlight">
+            <span class="number">1</span>
+            <span class="text"><strong>Highlight 1</strong><br>The strongest notes preserve both the original idea and enough context to find it again.</span>
+          </div>
+          <div class="highlight">
+            <span class="number">2</span>
+            <span class="text"><strong>Highlight 2</strong><br>A useful collection should stay out of the way while you read.</span>
+          </div>
+          <div class="highlight">
+            <span class="number">3</span>
+            <span class="text"><strong>Highlight 3</strong><br>Page numbers and sources turn loose quotations into usable research.</span>
+          </div>
+          <button class="copy-all" type="button">Copy All 3</button>
+          <div class="format">Then paste once anywhere with Ctrl+V.</div>
+          <div class="options">Options</div>
         </div>
-        <div class="highlight">
-          <span class="number">1</span>
-          <span class="text">The strongest notes preserve both the original idea and enough context to find it again.</span>
-        </div>
-        <div class="highlight">
-          <span class="number">2</span>
-          <span class="text">A useful collection should stay out of the way while you read.</span>
-        </div>
-        <div class="highlight">
-          <span class="number">3</span>
-          <span class="text">Page numbers and sources turn loose quotations into usable research.</span>
-        </div>
-        <button class="copy-all" type="button">Copy All 3</button>
-        <div class="format">Then paste once anywhere with Ctrl+V.</div>
-        <div class="options">Options</div>
+        <div class="mc-toggle">MC 3</div>
       </aside>
     </main>
   </body>

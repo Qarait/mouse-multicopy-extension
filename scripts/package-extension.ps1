@@ -22,6 +22,8 @@ New-Item -ItemType Directory -Force -Path $buildDir | Out-Null
 $files = @(
   "manifest.json",
   "background.js",
+  "state.js",
+  "clipboard.js",
   "content.js",
   "content.css",
   "popup.html",

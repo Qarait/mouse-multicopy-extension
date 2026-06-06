@@ -20,17 +20,18 @@ Features:
 - Include or omit page titles and URLs
 - See the saved highlight count on the extension icon
 - Start with a simple interface; open Options only when needed
-- Paste a chosen slot into focused text fields and editors
-- Rename slots to describe what each saved snippet is
-- Drag slots to reorder them before pasting
+- Use a compact floating palette that shows only saved highlights
+- Paste a chosen highlight into focused text fields and editors
+- Rename highlights to describe what each saved snippet is
+- Drag highlights to reorder them before pasting
 - Create separate sessions for different tasks or research contexts
 - Use clipboard fallback for rich code editors that block direct insertion
-- Copy all saved slots at once
+- Copy all saved highlights at once
 - Undo accidental captures
 - Warn when the oldest slot is replaced
-- Delete individual slots
+- Delete individual highlights
 - Pause collection when you do not want selections saved
-- Adjust quick slots from 3 to 50
+- Adjust the highlight limit from 3 to 50
 - Set a minimum capture length
 - Skip duplicate selections automatically
 - Keyboard shortcuts for capture and palette toggle
@@ -60,7 +61,7 @@ https://gist.github.com/Qarait/15671558d14faa3e1ed75e4886923f6c
 - `icons/icon128.png`
 - `store-assets/screenshot-1280x800.png`
 - `PRIVACY.md`
-- Distribution ZIP from `dist/mouse-multicopy-0.4.2.zip`
+- Distribution ZIP from `dist/mouse-multicopy-0.5.0.zip`
 
 ## Manual QA Before Submission
 
@@ -68,6 +69,8 @@ https://gist.github.com/Qarait/15671558d14faa3e1ed75e4886923f6c
 - Open a normal webpage, not a `chrome://` page.
 - Highlight three separate text snippets.
 - Confirm the page widget shows `MC 3`.
+- Open the floating palette and confirm it shows only three saved highlights and no empty slots.
+- Confirm Copy All 3 is the primary action and Options starts closed.
 - Confirm each capture toast includes its number and a short preview.
 - Open Options, set a page number, click Copy With Details, and confirm the formatted output includes it.
 - Confirm the toolbar icon badge shows `3`.

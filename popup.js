@@ -1,17 +1,10 @@
 const STORAGE_KEY = "mouseMultiCopyState";
-const DEFAULT_STATE = {
-  enabled: true,
-  maxSlots: 12,
-  minChars: 3,
-  ignoreDuplicates: true,
-  currentPage: "",
-  outputFormat: "plain",
-  includeSource: false,
-  includePage: false,
-  activeGroupId: "default",
-  groups: [],
-  clips: []
-};
+const {
+  normalizeState,
+  clampNumber,
+  createGroupId,
+  isValidClipIndex
+} = globalThis.MouseMultiCopyState;
 
 const elements = {
   enabled: document.getElementById("enabled"),
@@ -214,8 +207,9 @@ async function copyAllHighlights() {
     showMessage("Start by highlighting text on a webpage.");
     return;
   }
-  await navigator.clipboard.writeText(text);
-  showMessage(`Copied. Paste once anywhere with Ctrl+V.`);
+  if (await writeClipboard(text)) {
+    showMessage("Copied. Paste once anywhere with Ctrl+V.");
+  }
 }
 
 async function copyFormattedHighlights() {
@@ -225,8 +219,9 @@ async function copyFormattedHighlights() {
     showMessage("Start by highlighting text on a webpage.");
     return;
   }
-  await navigator.clipboard.writeText(text);
-  showMessage("Copied with details.");
+  if (await writeClipboard(text)) {
+    showMessage("Copied with details.");
+  }
 }
 
 async function updateMaxSlots() {
@@ -260,8 +255,9 @@ async function copyClip(index) {
   if (!clip) {
     return;
   }
-  await navigator.clipboard.writeText(clip.text);
-  showMessage(`Copied highlight ${index + 1}.`);
+  if (await writeClipboard(clip.text)) {
+    showMessage(`Copied highlight ${index + 1}.`);
+  }
 }
 
 async function renameClip(index) {
@@ -382,74 +378,6 @@ async function setState(state) {
   await chrome.storage.local.set({ [STORAGE_KEY]: normalizeState(state) });
 }
 
-function normalizeState(state) {
-  const maxSlots = clampNumber(state?.maxSlots, DEFAULT_STATE.maxSlots, 3, 50);
-  const minChars = clampNumber(state?.minChars, DEFAULT_STATE.minChars, 1, 40);
-  const groups = normalizeGroups(state, maxSlots);
-  const activeGroupId = groups.some((group) => group.id === state?.activeGroupId)
-    ? state.activeGroupId
-    : groups[0].id;
-  const normalizedGroups = groups.map((group) => group.id === activeGroupId && Array.isArray(state?.clips)
-    ? { ...group, clips: normalizeClips(state.clips, maxSlots) }
-    : group);
-  const activeGroup = normalizedGroups.find((group) => group.id === activeGroupId) || normalizedGroups[0];
-
-  return {
-    enabled: typeof state?.enabled === "boolean" ? state.enabled : DEFAULT_STATE.enabled,
-    maxSlots,
-    minChars,
-    ignoreDuplicates: typeof state?.ignoreDuplicates === "boolean" ? state.ignoreDuplicates : DEFAULT_STATE.ignoreDuplicates,
-    currentPage: String(state?.currentPage || "").trim().slice(0, 40),
-    outputFormat: ["numbered", "bullets", "plain"].includes(state?.outputFormat)
-      ? state.outputFormat
-      : DEFAULT_STATE.outputFormat,
-    includeSource: typeof state?.includeSource === "boolean" ? state.includeSource : DEFAULT_STATE.includeSource,
-    includePage: typeof state?.includePage === "boolean" ? state.includePage : DEFAULT_STATE.includePage,
-    activeGroupId,
-    activeGroup,
-    groups: normalizedGroups,
-    clips: activeGroup.clips
-  };
-}
-
-function normalizeGroups(state, maxSlots) {
-  const storedGroups = Array.isArray(state?.groups) ? state.groups : [];
-  const groups = storedGroups
-    .filter((group) => group && typeof group === "object")
-    .map((group, index) => ({
-      id: String(group.id || createGroupId(index)),
-      name: String(group.name || `Session ${index + 1}`).trim().slice(0, 40) || `Session ${index + 1}`,
-      clips: normalizeClips(group.clips, maxSlots)
-    }))
-    .filter((group) => group.id && group.name);
-
-  if (groups.length) {
-    return groups;
-  }
-  return [{
-    id: DEFAULT_STATE.activeGroupId,
-    name: "Default",
-    clips: normalizeClips(state?.clips, maxSlots)
-  }];
-}
-
-function normalizeClips(clips, maxSlots) {
-  return Array.isArray(clips)
-    ? clips
-      .filter((clip) => clip && typeof clip.text === "string" && clip.text.trim())
-      .slice(-maxSlots)
-      .map((clip, index) => ({
-        id: clip.id || createClipId(clip.capturedAt || index),
-        text: clip.text,
-        label: String(clip.label || "").trim().slice(0, 60),
-        title: clip.title || "",
-        url: clip.url || "",
-        page: String(clip.page || "").trim().slice(0, 40),
-        capturedAt: clip.capturedAt || 0
-      }))
-    : [];
-}
-
 function formatClips(clips, state) {
   return clips.map((clip, index) => {
     const sourceParts = [];
@@ -471,21 +399,14 @@ function formatClips(clips, state) {
   }).join("\n\n");
 }
 
-function clampNumber(value, fallback, min, max) {
-  const number = Number(value);
-  return Number.isFinite(number) ? Math.max(min, Math.min(max, Math.round(number))) : fallback;
-}
-
-function createClipId(seed) {
-  return `${seed}-${Math.random().toString(36).slice(2, 10)}`;
-}
-
-function createGroupId(seed) {
-  return `group-${seed}-${Math.random().toString(36).slice(2, 10)}`;
-}
-
-function isValidClipIndex(clips, index) {
-  return Number.isInteger(index) && index >= 0 && index < clips.length;
+async function writeClipboard(text) {
+  try {
+    await globalThis.MouseMultiCopyClipboard.writeText(text);
+    return true;
+  } catch (_error) {
+    showMessage("Could not access the clipboard. Please try again.");
+    return false;
+  }
 }
 
 function showMessage(text) {

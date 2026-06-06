@@ -3,8 +3,9 @@ const fs = require("node:fs");
 const http = require("node:http");
 const path = require("node:path");
 const vm = require("node:vm");
+const { findChrome, uniqueTempPath, toFileUrl } = require("./test-utils");
 
-const chromePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+const chromePath = findChrome();
 const extensionDir = __dirname;
 const testPage = toFileUrl(path.join(extensionDir, "test-runner.html"));
 const popupTestPage = toFileUrl(path.join(extensionDir, "popup-test.html"));
@@ -15,14 +16,95 @@ main().catch((error) => {
 });
 
 async function main() {
+  const sharedState = runSharedStateHarness();
+  const clipboard = await runClipboardHarness();
   const workflow = await runWorkflowHarness();
   const popup = await runPopupHarness();
   const background = await runBackgroundHarness();
   const injection = await runExtensionInjection();
-  const ok = workflow.ok && popup.ok && background.ok;
+  const ok = sharedState.ok && clipboard.ok && workflow.ok && popup.ok && background.ok;
 
-  console.log(JSON.stringify({ ok, workflow, popup, background, extensionInjectionProbe: injection }, null, 2));
+  console.log(JSON.stringify({
+    ok,
+    sharedState,
+    clipboard,
+    workflow,
+    popup,
+    background,
+    extensionInjectionProbe: injection
+  }, null, 2));
   process.exit(ok ? 0 : 1);
+}
+
+function runSharedStateHarness() {
+  const context = {};
+  context.globalThis = context;
+  vm.runInNewContext(fs.readFileSync(path.join(extensionDir, "state.js"), "utf8"), context);
+  const state = context.MouseMultiCopyState.normalizeState({
+    maxSlots: 3,
+    clips: [
+      { text: "One" },
+      { text: "Two" },
+      { text: "Three" },
+      { text: "Four" }
+    ]
+  });
+
+  return {
+    ok: state.clips.length === 3
+      && state.clips[0].text === "Two"
+      && state.activeGroupId === "default"
+      && state.outputFormat === "plain"
+      && state.includeSource === false
+      && state.includePage === false,
+    clips: state.clips.map((clip) => clip.text),
+    defaults: {
+      outputFormat: state.outputFormat,
+      includeSource: state.includeSource,
+      includePage: state.includePage
+    }
+  };
+}
+
+async function runClipboardHarness() {
+  let selected = false;
+  let removed = false;
+  let fallbackText = "";
+  const textarea = {
+    value: "",
+    style: {},
+    setAttribute() {},
+    select() {
+      selected = true;
+      fallbackText = this.value;
+    },
+    remove() {
+      removed = true;
+    }
+  };
+  const context = {
+    navigator: {
+      clipboard: {
+        async writeText() {
+          throw new Error("Primary clipboard unavailable.");
+        }
+      }
+    },
+    document: {
+      body: { appendChild() {} },
+      documentElement: {},
+      createElement() { return textarea; },
+      execCommand(command) { return command === "copy"; }
+    }
+  };
+  context.globalThis = context;
+  vm.runInNewContext(fs.readFileSync(path.join(extensionDir, "clipboard.js"), "utf8"), context);
+  await context.MouseMultiCopyClipboard.writeText("fallback text");
+
+  return {
+    ok: selected && removed && fallbackText === "fallback text",
+    fallbackText
+  };
 }
 
 async function runPopupHarness() {
@@ -185,11 +267,7 @@ function runChrome(args) {
 }
 
 function uniqueProfile(prefix) {
-  return path.join("C:\\tmp", `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`);
-}
-
-function toFileUrl(filePath) {
-  return `file:///${filePath.replace(/\\/g, "/").replace(/ /g, "%20")}`;
+  return uniqueTempPath(prefix);
 }
 
 function unescapeHtml(value) {

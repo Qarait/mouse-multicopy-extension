@@ -2,13 +2,17 @@ const { spawn } = require("node:child_process");
 const fs = require("node:fs");
 const fsp = require("node:fs/promises");
 const http = require("node:http");
+const os = require("node:os");
 const path = require("node:path");
+const { findChrome, uniqueTempPath } = require("./test-utils");
 
-const chromePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+const chromePath = findChrome();
 const extensionDir = __dirname;
 const runtimeFiles = [
   "manifest.json",
   "background.js",
+  "state.js",
+  "clipboard.js",
   "content.js",
   "content.css",
   "popup.html",
@@ -37,8 +41,8 @@ async function main() {
 
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
 
-  const profileDir = path.join("C:\\tmp", `mmc-real-browser-test-${Date.now()}-${Math.random().toString(16).slice(2)}`);
-  const loadDir = path.join("C:\\tmp", `mmc-extension-load-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+  const profileDir = uniqueTempPath("mmc-real-browser-test");
+  const loadDir = uniqueTempPath("mmc-extension-load");
   await copyRuntimeExtension(loadDir);
 
   const fixtureUrl = `http://127.0.0.1:${server.address().port}/fixture`;
@@ -223,8 +227,9 @@ function createCdpClient(wsUrl) {
 
 async function cleanupTempDir(directory, prefix) {
   const resolved = path.resolve(directory);
-  const allowed = path.resolve("C:\\tmp");
-  if (!resolved.startsWith(allowed) || !path.basename(resolved).startsWith(prefix)) {
+  const allowed = path.resolve(os.tmpdir());
+  const insideTemp = resolved === allowed || resolved.startsWith(`${allowed}${path.sep}`);
+  if (!insideTemp || !path.basename(resolved).startsWith(prefix)) {
     return;
   }
 

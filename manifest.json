@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Mouse MultiCopy",
-  "version": "0.4.2",
-  "description": "Collect webpage highlights, keep their source and page, then copy them all in one clean document.",
+  "version": "0.5.0",
+  "description": "Collect webpage highlights and copy them all in one clean document.",
   "permissions": ["clipboardWrite", "storage"],
   "icons": {
     "16": "icons/icon16.png",
@@ -26,7 +26,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "js": ["state.js", "clipboard.js", "content.js"],
       "css": ["content.css"],
       "run_at": "document_idle"
     }

@@ -4,7 +4,7 @@ Use this file when submitting Mouse MultiCopy to the Chrome Web Store Developer 
 
 ## Submission Status
 
-- Extension package: `dist/mouse-multicopy-0.4.2.zip`
+- Extension package: `dist/mouse-multicopy-0.5.0.zip`
 - Category: Productivity
 - Visibility recommendation for first review: Unlisted
 - Final manual QA required: Yes
@@ -71,7 +71,7 @@ Use `STORE_LISTING.md` for the short description, full description, category, pr
 
 ## Upload Assets
 
-- Package: `dist/mouse-multicopy-0.4.2.zip`
+- Package: `dist/mouse-multicopy-0.5.0.zip`
 - Icon: `icons/icon128.png`
 - Screenshot: `store-assets/screenshot-1280x800.png`
 - Privacy policy: public URL based on `PRIVACY.md`
@@ -82,21 +82,22 @@ Use `STORE_LISTING.md` for the short description, full description, category, pr
 2. Open `manual-test.html` through a local HTTP server or use any normal webpage with selectable text and a textarea.
 3. Highlight `Alpha selection`, `Beta selection`, and `Gamma selection`.
 4. Confirm the floating button shows `MC 3`.
-5. Confirm each toast shows the highlight number and a short text preview.
-6. Enter page `42`, capture another highlight, and confirm it inherits that page.
-7. Click Copy All and confirm it copies clean paragraphs separated by blank lines.
-8. Toggle Page and Source off and confirm the copied output omits them.
-9. Open the palette and paste slot 2 into a textarea.
-10. Open Options, use Copy With Details, and confirm the page, title, and URL are included.
-11. Drag a highlight to a new position and confirm the order persists.
-12. Create a second session, switch sessions, and confirm each session has separate clips.
-13. Fill the configured highlight limit, capture one extra snippet, and confirm the toast says slot 1 was replaced.
-14. Test a CodeMirror or Monaco-style editor and confirm the extension copies to clipboard with a `Ctrl+V` fallback message.
-15. Confirm duplicate highlighting does not add another copy when duplicate protection is on.
-16. Confirm short selections below the minimum length are ignored.
-17. Confirm Undo removes the latest captured slot.
-18. Confirm individual Delete works.
-19. Confirm the toolbar badge count follows the active session.
+5. Open the floating palette and confirm it shows only three highlights, with no empty placeholders.
+6. Confirm Copy All 3 is prominent and Options starts closed.
+7. Confirm each toast shows the highlight number and a short text preview.
+8. Enter page `42`, capture another highlight, and confirm it inherits that page.
+9. Click Copy All and confirm it copies clean paragraphs separated by blank lines.
+10. Open Options and paste highlight 2 into a textarea.
+11. Use Copy With Details in the popup and confirm the page, title, and URL are included.
+12. Drag a highlight to a new position and confirm the order persists.
+13. Create a second session, switch sessions, and confirm each session has separate clips.
+14. Fill the configured highlight limit, capture one extra snippet, and confirm the toast says slot 1 was replaced.
+15. Test a CodeMirror or Monaco-style editor and confirm the extension copies to clipboard with a `Ctrl+V` fallback message.
+16. Confirm duplicate highlighting does not add another copy when duplicate protection is on.
+17. Confirm short selections below the minimum length are ignored.
+18. Confirm Undo removes the latest captured highlight.
+19. Confirm individual Delete works.
+20. Confirm the toolbar badge count follows the active session.
 
 ## Likely Review Questions
 

@@ -1,18 +1,11 @@
 (() => {
   const STORAGE_KEY = "mouseMultiCopyState";
-  const DEFAULT_STATE = {
-    enabled: true,
-    maxSlots: 12,
-    minChars: 3,
-    ignoreDuplicates: true,
-    currentPage: "",
-    outputFormat: "plain",
-    includeSource: false,
-    includePage: false,
-    activeGroupId: "default",
-    groups: [],
-    clips: []
-  };
+  const {
+    DEFAULT_STATE,
+    normalizeState,
+    createClipId,
+    isValidClipIndex
+  } = globalThis.MouseMultiCopyState;
 
   let widget;
   let panel;
@@ -69,17 +62,22 @@
         <span id="mmc-toast-message"></span>
         <button id="mmc-undo" type="button">Undo</button>
       </div>
-      <div id="mmc-panel" aria-label="Mouse MultiCopy slots">
+      <div id="mmc-panel" aria-label="Saved highlights">
         <div id="mmc-header">
-          <div id="mmc-title">Mouse MultiCopy</div>
-          <div id="mmc-status">0 / 12</div>
+          <div id="mmc-title">Highlights</div>
+          <div id="mmc-status">0 saved</div>
         </div>
+        <div id="mmc-empty">Highlight text on the page to begin.</div>
         <div id="mmc-slots"></div>
-        <div id="mmc-actions">
-          <button class="mmc-action" id="mmc-enabled" type="button">Pause</button>
-          <button class="mmc-action" id="mmc-copy-all" type="button">Copy All</button>
-          <button class="mmc-action" id="mmc-clear" type="button">Clear</button>
-        </div>
+        <button id="mmc-copy-all" type="button">Copy All</button>
+        <div id="mmc-paste-hint">Then paste once anywhere with Ctrl+V.</div>
+        <details id="mmc-options">
+          <summary>Options</summary>
+          <div id="mmc-actions">
+            <button class="mmc-action" id="mmc-enabled" type="button">Pause collection</button>
+            <button class="mmc-action" id="mmc-clear" type="button">Clear all</button>
+          </div>
+        </details>
       </div>
       <button id="mmc-toggle" type="button" data-enabled="true">MC 0</button>
     `;
@@ -94,9 +92,10 @@
     toastMessageNode = widget.querySelector("#mmc-toast-message");
     undoButton = widget.querySelector("#mmc-undo");
     enabledButton = widget.querySelector("#mmc-enabled");
+    const options = widget.querySelector("#mmc-options");
 
     widget.addEventListener("mousedown", (event) => {
-      if (!event.target.closest(".mmc-slot")) {
+      if (!event.target.closest(".mmc-slot, #mmc-options, #mmc-copy-all, #mmc-toggle, #mmc-undo")) {
         event.preventDefault();
       }
     });
@@ -105,6 +104,9 @@
     enabledButton.addEventListener("click", toggleEnabled);
     widget.querySelector("#mmc-copy-all").addEventListener("click", copyAll);
     widget.querySelector("#mmc-clear").addEventListener("click", clearClips);
+    options.addEventListener("toggle", () => {
+      widget.classList.toggle("mmc-options-open", options.open);
+    });
   }
 
   async function handleMessage(message) {
@@ -261,9 +263,11 @@
       : findEditable(document.activeElement);
 
     if (target && isRichCodeEditor(target)) {
-      await copyToClipboard(text);
-      showToast("Copied to clipboard instead. Press Ctrl+V in this editor.");
-      return true;
+      const copied = await copyToClipboard(text);
+      if (copied) {
+        showToast("Copied to clipboard instead. Press Ctrl+V in this editor.");
+      }
+      return copied;
     }
 
     if (target && insertText(target, text)) {
@@ -271,7 +275,10 @@
       return true;
     }
 
-    await copyToClipboard(text);
+    const copied = await copyToClipboard(text);
+    if (!copied) {
+      return false;
+    }
     const message = target
       ? "Copied to clipboard instead. Press Ctrl+V in this editor."
       : "No text box focused. Copied slot to clipboard.";
@@ -331,22 +338,23 @@
 
   async function copyAll() {
     const state = await getState();
-    const text = formatClips(state.clips, state);
+    const text = state.clips.map((clip) => clip.text).join("\n\n");
 
     if (!text) {
-      showToast("No clips to copy yet.");
+      showToast("No highlights to copy yet.");
       return;
     }
 
-    await copyToClipboard(text);
-    showToast(`Copied ${state.clips.length} highlight${state.clips.length === 1 ? "" : "s"}.`);
+    if (await copyToClipboard(text)) {
+      showToast("Copied. Paste once anywhere with Ctrl+V.");
+    }
   }
 
   async function clearClips() {
     const state = await getState();
     await setState({ ...state, clips: [] });
     lastUndoClipId = null;
-    showToast("Cleared slots.");
+    showToast("Cleared highlights.");
   }
 
   async function toggleEnabled() {
@@ -434,20 +442,13 @@
   }
 
   async function copyToClipboard(text) {
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(text);
-      return;
+    try {
+      await globalThis.MouseMultiCopyClipboard.writeText(text);
+      return true;
+    } catch (_error) {
+      showToast("Could not access the clipboard. Please try again.");
+      return false;
     }
-
-    const textarea = document.createElement("textarea");
-    textarea.value = text;
-    textarea.setAttribute("readonly", "");
-    textarea.style.position = "fixed";
-    textarea.style.left = "-9999px";
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand("copy");
-    textarea.remove();
   }
 
   async function renderFromState() {
@@ -456,66 +457,63 @@
 
   function render(state) {
     const normalized = normalizeState(state);
-    statusNode.textContent = `${normalized.clips.length} / ${normalized.maxSlots}`;
+    const count = normalized.clips.length;
+    statusNode.textContent = `${count} saved`;
     widget.dataset.groupId = normalized.activeGroupId;
-    toggleButton.textContent = `MC ${normalized.clips.length}`;
+    toggleButton.textContent = `MC ${count}`;
     toggleButton.dataset.enabled = String(normalized.enabled);
-    enabledButton.textContent = normalized.enabled ? "Pause" : "Resume";
+    enabledButton.textContent = normalized.enabled ? "Pause collection" : "Resume collection";
     toggleButton.title = normalized.enabled
       ? "Collect mode is on. Highlight text to save it."
       : "Collect mode is paused. Use the popup or shortcut to capture manually.";
 
-    widget.querySelector("#mmc-title").textContent = `Mouse MultiCopy - ${normalized.activeGroup.name}`;
+    widget.querySelector("#mmc-title").textContent = normalized.activeGroup.name === "Default"
+      ? "Highlights"
+      : normalized.activeGroup.name;
+    widget.querySelector("#mmc-empty").hidden = count > 0;
+    const copyAllButton = widget.querySelector("#mmc-copy-all");
+    copyAllButton.disabled = count === 0;
+    copyAllButton.textContent = count ? `Copy All ${count}` : "Copy All";
     slotsNode.replaceChildren();
 
-    for (let index = 0; index < normalized.maxSlots; index += 1) {
+    for (let index = 0; index < count; index += 1) {
       const clip = normalized.clips[index];
       const slot = document.createElement("div");
-      slot.className = `mmc-slot${clip ? "" : " mmc-empty"}`;
-      slot.draggable = Boolean(clip);
+      slot.className = "mmc-slot";
+      slot.draggable = true;
       slot.dataset.index = index;
       slot.innerHTML = `
-        <button class="mmc-slot-main" type="button"></button>
-        <button class="mmc-delete" type="button" aria-label="Delete slot ${index + 1}">x</button>
-      `;
-
-      const mainButton = slot.querySelector(".mmc-slot-main");
-      mainButton.innerHTML = `
         <span class="mmc-number">${index + 1}</span>
         <span class="mmc-body">
           <span class="mmc-label"></span>
           <span class="mmc-preview"></span>
         </span>
+        <span class="mmc-item-actions">
+          <button class="mmc-slot-main" type="button">Paste</button>
+          <button class="mmc-delete" type="button" aria-label="Delete highlight ${index + 1}">Delete</button>
+        </span>
       `;
-      mainButton.disabled = !clip;
-      mainButton.querySelector(".mmc-label").textContent = clip
-        ? (clip.label || `Slot ${index + 1}`)
-        : `Slot ${index + 1}`;
-      mainButton.querySelector(".mmc-preview").textContent = clip
-        ? clip.text
-        : "Empty";
-      mainButton.addEventListener("click", () => {
-        if (clip) {
-          insertOrCopyText(clip.text);
-        }
-      });
-      mainButton.addEventListener("dblclick", (event) => {
+
+      const mainButton = slot.querySelector(".mmc-slot-main");
+      slot.querySelector(".mmc-label").textContent = clip.label || `Highlight ${index + 1}`;
+      slot.querySelector(".mmc-preview").textContent = clip.text;
+      mainButton.addEventListener("click", () => insertOrCopyText(clip.text));
+      slot.querySelector(".mmc-body").addEventListener("dblclick", (event) => {
         event.preventDefault();
         event.stopPropagation();
-        if (clip) {
-          promptRenameClip(index);
-        }
+        promptRenameClip(index);
       });
 
       slot.addEventListener("dragstart", (event) => {
-        if (!clip) {
+        if (!widget.classList.contains("mmc-options-open")) {
+          event.preventDefault();
           return;
         }
         event.dataTransfer.effectAllowed = "move";
         event.dataTransfer.setData("text/plain", String(index));
       });
       slot.addEventListener("dragover", (event) => {
-        if (clip) {
+        if (widget.classList.contains("mmc-options-open")) {
           event.preventDefault();
           event.dataTransfer.dropEffect = "move";
         }
@@ -527,7 +525,6 @@
       });
 
       const deleteButton = slot.querySelector(".mmc-delete");
-      deleteButton.disabled = !clip;
       deleteButton.addEventListener("click", () => deleteClip(index));
 
       slotsNode.appendChild(slot);
@@ -555,86 +552,6 @@
     await chrome.storage.local.set({ [STORAGE_KEY]: normalizeState(state) });
   }
 
-  function normalizeState(state) {
-    const maxSlots = clampNumber(state?.maxSlots, DEFAULT_STATE.maxSlots, 3, 50);
-    const minChars = clampNumber(state?.minChars, DEFAULT_STATE.minChars, 1, 40);
-    const groups = normalizeGroups(state, maxSlots);
-    const activeGroupId = groups.some((group) => group.id === state?.activeGroupId)
-      ? state.activeGroupId
-      : groups[0].id;
-
-    const normalizedGroups = groups.map((group) => group.id === activeGroupId && Array.isArray(state?.clips)
-      ? { ...group, clips: normalizeClips(state.clips, maxSlots) }
-      : group);
-    const activeGroup = normalizedGroups.find((group) => group.id === activeGroupId) || normalizedGroups[0];
-
-    return {
-      enabled: typeof state?.enabled === "boolean" ? state.enabled : DEFAULT_STATE.enabled,
-      maxSlots,
-      minChars,
-      ignoreDuplicates: typeof state?.ignoreDuplicates === "boolean" ? state.ignoreDuplicates : DEFAULT_STATE.ignoreDuplicates,
-      currentPage: String(state?.currentPage || "").trim().slice(0, 40),
-      outputFormat: ["numbered", "bullets", "plain"].includes(state?.outputFormat)
-        ? state.outputFormat
-        : DEFAULT_STATE.outputFormat,
-      includeSource: typeof state?.includeSource === "boolean" ? state.includeSource : DEFAULT_STATE.includeSource,
-      includePage: typeof state?.includePage === "boolean" ? state.includePage : DEFAULT_STATE.includePage,
-      activeGroupId,
-      activeGroup,
-      groups: normalizedGroups,
-      clips: activeGroup.clips
-    };
-  }
-
-  function normalizeGroups(state, maxSlots) {
-    const storedGroups = Array.isArray(state?.groups)
-      ? state.groups
-      : [];
-    const groups = storedGroups
-      .filter((group) => group && typeof group === "object")
-      .map((group, index) => ({
-        id: String(group.id || createGroupId(index)),
-        name: String(group.name || `Session ${index + 1}`).trim().slice(0, 40) || `Session ${index + 1}`,
-        clips: normalizeClips(group.clips, maxSlots)
-      }))
-      .filter((group) => group.id && group.name);
-
-    if (groups.length) {
-      return groups;
-    }
-
-    return [{
-      id: DEFAULT_STATE.activeGroupId,
-      name: "Default",
-      clips: normalizeClips(state?.clips, maxSlots)
-    }];
-  }
-
-  function normalizeClips(clips, maxSlots) {
-    return Array.isArray(clips)
-      ? clips
-        .filter((clip) => clip && typeof clip.text === "string" && clip.text.trim())
-        .slice(-maxSlots)
-        .map((clip, index) => ({
-          id: clip.id || createClipId(clip.capturedAt || index),
-          text: clip.text,
-          label: String(clip.label || "").trim().slice(0, 60),
-          title: clip.title || "",
-          url: clip.url || "",
-          page: String(clip.page || "").trim().slice(0, 40),
-          capturedAt: clip.capturedAt || 0
-        }))
-      : [];
-  }
-
-  function clampNumber(value, fallback, min, max) {
-    const number = Number(value);
-    if (!Number.isFinite(number)) {
-      return fallback;
-    }
-    return Math.max(min, Math.min(max, Math.round(number)));
-  }
-
   function findDuplicateIndex(clips, text) {
     const normalizedText = normalizeText(text);
     return clips.findIndex((clip) => normalizeText(clip.text) === normalizedText);
@@ -649,40 +566,6 @@
     return normalized.length > maxLength
       ? `${normalized.slice(0, maxLength - 3)}...`
       : normalized;
-  }
-
-  function formatClips(clips, state) {
-    return clips.map((clip, index) => {
-      const sourceParts = [];
-      if (state.includeSource && clip.title) {
-        sourceParts.push(clip.title);
-      }
-      if (state.includeSource && clip.url) {
-        sourceParts.push(clip.url);
-      }
-
-      const page = state.includePage && clip.page ? ` (page ${clip.page})` : "";
-      const source = sourceParts.length ? `\n   Source: ${sourceParts.join(" | ")}` : "";
-      if (state.outputFormat === "plain") {
-        return `${clip.text}${page}${source}`;
-      }
-      if (state.outputFormat === "bullets") {
-        return `- ${clip.text}${page}${source}`;
-      }
-      return `${index + 1}. ${clip.text}${page}${source}`;
-    }).join("\n\n");
-  }
-
-  function createClipId(seed) {
-    return `${seed}-${Math.random().toString(36).slice(2, 10)}`;
-  }
-
-  function createGroupId(seed) {
-    return `group-${seed}-${Math.random().toString(36).slice(2, 10)}`;
-  }
-
-  function isValidClipIndex(clips, index) {
-    return Number.isInteger(index) && index >= 0 && index < clips.length;
   }
 
   function isFromWidget(node) {

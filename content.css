@@ -1,7 +1,7 @@
 #mmc-widget,
 #mmc-widget * {
   box-sizing: border-box;
-  color: #111827;
+  color: #17201b;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   letter-spacing: 0;
 }
@@ -19,10 +19,10 @@
   display: none;
   margin-bottom: 8px;
   overflow: hidden;
-  border: 1px solid rgba(17, 24, 39, 0.14);
+  border: 1px solid rgba(23, 32, 27, 0.14);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 18px 48px rgba(17, 24, 39, 0.22);
+  box-shadow: 0 18px 48px rgba(23, 32, 27, 0.22);
 }
 
 #mmc-widget.mmc-open #mmc-panel {
@@ -34,106 +34,77 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 10px 10px 8px;
-  border-bottom: 1px solid rgba(17, 24, 39, 0.08);
+  padding: 11px 12px 9px;
+  border-bottom: 1px solid rgba(23, 32, 27, 0.08);
 }
 
 #mmc-title {
   min-width: 0;
+  overflow: hidden;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 #mmc-status {
-  color: #4b5563;
+  color: #59645d;
   font-size: 12px;
   white-space: nowrap;
 }
 
+#mmc-empty {
+  margin: 10px;
+  padding: 20px 12px;
+  border: 1px dashed rgba(23, 32, 27, 0.2);
+  border-radius: 7px;
+  color: #667169;
+  font-size: 12px;
+  text-align: center;
+}
+
+#mmc-empty[hidden] {
+  display: none;
+}
+
 #mmc-slots {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
+  gap: 7px;
+  max-height: 320px;
   padding: 10px;
-  max-height: 310px;
   overflow: auto;
 }
 
-.mmc-slot {
-  position: relative;
-  min-height: 58px;
+#mmc-slots:empty {
+  display: none;
 }
 
-.mmc-slot[draggable="true"] {
+.mmc-slot {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: start;
+  min-height: 52px;
+  padding: 9px;
+  border: 1px solid rgba(23, 32, 27, 0.1);
+  border-radius: 7px;
+  background: #fff;
+}
+
+#mmc-widget.mmc-options-open .mmc-slot[draggable="true"] {
   cursor: grab;
 }
 
-.mmc-slot-main {
+#mmc-widget .mmc-number {
   display: grid;
-  grid-template-columns: 22px minmax(0, 1fr);
-  gap: 6px;
-  align-items: start;
-  width: 100%;
-  min-height: 58px;
-  padding: 7px 24px 7px 7px;
-  border: 1px solid rgba(17, 24, 39, 0.12);
+  place-items: center;
+  width: 28px;
+  height: 28px;
   border-radius: 7px;
-  background: #f9fafb;
-  cursor: pointer;
-  text-align: left;
-}
-
-.mmc-slot-main:hover {
-  border-color: #2563eb;
-  background: #eff6ff;
-}
-
-.mmc-slot-main:disabled,
-.mmc-delete:disabled {
-  cursor: default;
-  opacity: 0.58;
-}
-
-.mmc-slot-main:disabled:hover {
-  border-color: rgba(17, 24, 39, 0.12);
-  background: #f9fafb;
-}
-
-.mmc-delete {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  display: grid;
-  place-items: center;
-  width: 20px;
-  height: 20px;
-  min-height: 20px;
-  padding: 0;
-  border: 1px solid rgba(17, 24, 39, 0.12);
-  border-radius: 6px;
-  background: #fff;
-  color: #4b5563;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 800;
-  line-height: 1;
-}
-
-.mmc-delete:hover {
-  border-color: #dc2626;
-  color: #dc2626;
-}
-
-.mmc-number {
-  display: grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  background: #111827;
+  background: #17201b;
   color: #fff;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1;
 }
 
@@ -144,10 +115,10 @@
 .mmc-label {
   display: block;
   overflow: hidden;
-  color: #111827;
+  color: #17201b;
   font-size: 12px;
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.25;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -155,42 +126,103 @@
 .mmc-preview {
   display: -webkit-box;
   overflow: hidden;
-  color: #374151;
+  margin-top: 2px;
+  color: #465149;
   font-size: 12px;
-  line-height: 1.25;
+  line-height: 1.35;
   overflow-wrap: anywhere;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
 }
 
-#mmc-actions {
+.mmc-item-actions {
+  display: none;
+  gap: 5px;
+}
+
+#mmc-widget.mmc-options-open .mmc-item-actions {
   display: flex;
-  gap: 6px;
-  padding: 0 10px 10px;
 }
 
+.mmc-slot-main,
+.mmc-delete,
 .mmc-action,
-#mmc-toggle {
-  min-height: 34px;
-  border: 1px solid rgba(17, 24, 39, 0.12);
+#mmc-copy-all,
+#mmc-toggle,
+#mmc-undo {
+  border: 1px solid rgba(23, 32, 27, 0.14);
   border-radius: 7px;
   background: #fff;
   cursor: pointer;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.mmc-slot-main,
+.mmc-delete {
+  min-height: 28px;
+  padding: 4px 7px;
+}
+
+.mmc-delete {
+  color: #9f1239;
+}
+
+#mmc-copy-all {
+  width: calc(100% - 20px);
+  min-height: 40px;
+  margin: 0 10px;
+  border-color: #166534;
+  background: #166534;
+  color: #fff;
+  font-size: 13px;
+}
+
+#mmc-copy-all:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+#mmc-paste-hint {
+  padding: 7px 10px 10px;
+  color: #667169;
+  font-size: 11px;
+  text-align: center;
+}
+
+#mmc-options {
+  margin: 0 10px 10px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(23, 32, 27, 0.1);
+}
+
+#mmc-options summary {
+  cursor: pointer;
+  color: #465149;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
+}
+
+#mmc-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding-top: 9px;
 }
 
 .mmc-action {
-  flex: 1;
-  padding: 7px 8px;
+  min-height: 34px;
+  padding: 6px 8px;
 }
 
 #mmc-toggle {
   width: 100%;
+  min-height: 40px;
   padding: 9px 11px;
-  background: #111827;
+  background: #17201b;
   color: #fff;
-  box-shadow: 0 10px 26px rgba(17, 24, 39, 0.2);
+  box-shadow: 0 10px 26px rgba(23, 32, 27, 0.2);
+  font-size: 12px;
 }
 
 #mmc-toggle[data-enabled="false"] {
@@ -204,14 +236,14 @@
   display: none;
   align-items: center;
   gap: 8px;
-  max-width: 320px;
+  max-width: 330px;
   padding: 8px 10px;
   border-radius: 7px;
-  background: #111827;
+  background: #17201b;
   color: #fff;
   font-size: 12px;
   line-height: 1.35;
-  box-shadow: 0 12px 30px rgba(17, 24, 39, 0.22);
+  box-shadow: 0 12px 30px rgba(23, 32, 27, 0.22);
 }
 
 #mmc-toast.mmc-show {
@@ -227,13 +259,9 @@
   flex: 0 0 auto;
   min-height: 26px;
   padding: 4px 8px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 6px;
+  border-color: rgba(255, 255, 255, 0.3);
   background: rgba(255, 255, 255, 0.12);
   color: #fff;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 800;
 }
 
 #mmc-undo[hidden] {
@@ -247,7 +275,11 @@
     width: calc(100vw - 20px);
   }
 
-  #mmc-slots {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .mmc-slot {
+    grid-template-columns: 28px minmax(0, 1fr);
+  }
+
+  #mmc-widget.mmc-options-open .mmc-item-actions {
+    grid-column: 2;
   }
 }
