@@ -137,14 +137,16 @@
 
 .mmc-item-actions {
   display: none;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 5px;
 }
 
 #mmc-widget.mmc-options-open .mmc-item-actions {
-  display: flex;
+  display: grid;
 }
 
-.mmc-slot-main,
+.mmc-copy,
+.mmc-paste,
 .mmc-delete,
 .mmc-action,
 #mmc-copy-all,
@@ -158,10 +160,12 @@
   font-weight: 750;
 }
 
-.mmc-slot-main,
+.mmc-copy,
+.mmc-paste,
 .mmc-delete {
+  min-width: 44px;
   min-height: 28px;
-  padding: 4px 7px;
+  padding: 4px 6px;
 }
 
 .mmc-delete {
@@ -280,6 +284,7 @@
   }
 
   #mmc-widget.mmc-options-open .mmc-item-actions {
+    display: grid;
     grid-column: 2;
   }
 }

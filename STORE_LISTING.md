@@ -21,6 +21,7 @@ Features:
 - See the saved highlight count on the extension icon
 - Start with a simple interface; open Options only when needed
 - Use a compact floating palette that shows only saved highlights
+- Copy, paste, or delete individual highlights from compact controls
 - Paste a chosen highlight into focused text fields and editors
 - Rename highlights to describe what each saved snippet is
 - Drag highlights to reorder them before pasting
@@ -61,7 +62,7 @@ https://gist.github.com/Qarait/15671558d14faa3e1ed75e4886923f6c
 - `icons/icon128.png`
 - `store-assets/screenshot-1280x800.png`
 - `PRIVACY.md`
-- Distribution ZIP from `dist/mouse-multicopy-0.5.0.zip`
+- Distribution ZIP from `dist/mouse-multicopy-0.5.1.zip`
 
 ## Manual QA Before Submission
 

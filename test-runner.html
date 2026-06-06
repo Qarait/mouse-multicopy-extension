@@ -176,7 +176,10 @@
           await wait(50);
           if (
             !document.getElementById("mmc-widget").classList.contains("mmc-options-open") ||
-            getComputedStyle(document.querySelector(".mmc-item-actions")).display !== "flex"
+            getComputedStyle(document.querySelector(".mmc-item-actions")).display !== "grid" ||
+            document.querySelectorAll(".mmc-copy").length !== 3 ||
+            document.querySelectorAll(".mmc-paste").length !== 3 ||
+            document.querySelectorAll(".mmc-delete").length !== 3
           ) {
             throw new Error("Expected individual controls to appear under Options.");
           }
@@ -200,7 +203,17 @@
             throw new Error(`Expected eviction warning toast, got: ${toast}`);
           }
 
-          const slots = Array.from(document.querySelectorAll(".mmc-slot-main"));
+          document.querySelectorAll(".mmc-copy")[1].click();
+          await wait(120);
+
+          if (
+            window.__mmcTest.getClipboardText() !== "Gamma selection" ||
+            window.__mmcTest.getState().clips.length !== 3
+          ) {
+            throw new Error("Expected individual Copy to preserve highlights and copy the chosen text.");
+          }
+
+          const slots = Array.from(document.querySelectorAll(".mmc-paste"));
           target.focus();
           slots[1].click();
           await wait(120);
@@ -265,6 +278,9 @@
           if (copiedAll !== "Delta selection\n\nGamma selection") {
             throw new Error(`Expected plain Copy All output, got: ${copiedAll}`);
           }
+
+          options.open = true;
+          options.dispatchEvent(new Event("toggle"));
 
           result.textContent = JSON.stringify({
             status: "pass",

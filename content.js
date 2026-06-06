@@ -489,15 +489,22 @@
           <span class="mmc-preview"></span>
         </span>
         <span class="mmc-item-actions">
-          <button class="mmc-slot-main" type="button">Paste</button>
+          <button class="mmc-copy" type="button">Copy</button>
+          <button class="mmc-paste" type="button">Paste</button>
           <button class="mmc-delete" type="button" aria-label="Delete highlight ${index + 1}">Delete</button>
         </span>
       `;
 
-      const mainButton = slot.querySelector(".mmc-slot-main");
+      const copyButton = slot.querySelector(".mmc-copy");
+      const pasteButton = slot.querySelector(".mmc-paste");
       slot.querySelector(".mmc-label").textContent = clip.label || `Highlight ${index + 1}`;
       slot.querySelector(".mmc-preview").textContent = clip.text;
-      mainButton.addEventListener("click", () => insertOrCopyText(clip.text));
+      copyButton.addEventListener("click", async () => {
+        if (await copyToClipboard(clip.text)) {
+          showToast(`Copied highlight ${index + 1}.`);
+        }
+      });
+      pasteButton.addEventListener("click", () => insertOrCopyText(clip.text));
       slot.querySelector(".mmc-body").addEventListener("dblclick", (event) => {
         event.preventDefault();
         event.stopPropagation();
