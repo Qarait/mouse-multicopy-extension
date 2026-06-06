@@ -61,7 +61,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File mouse-multicopy-extension\sc
 The upload package is created at:
 
 ```text
-mouse-multicopy-extension\dist\mouse-multicopy-0.4.1.zip
+mouse-multicopy-extension\dist\mouse-multicopy-0.4.2.zip
 ```
 
 The package contains only the runtime extension files, not tests or draft store docs.

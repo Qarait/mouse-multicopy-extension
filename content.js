@@ -6,9 +6,9 @@
     minChars: 3,
     ignoreDuplicates: true,
     currentPage: "",
-    outputFormat: "numbered",
-    includeSource: true,
-    includePage: true,
+    outputFormat: "plain",
+    includeSource: false,
+    includePage: false,
     activeGroupId: "default",
     groups: [],
     clips: []
