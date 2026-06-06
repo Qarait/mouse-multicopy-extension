@@ -88,7 +88,7 @@ button:disabled {
   grid-template-columns: 1fr 148px;
   align-items: center;
   gap: 10px;
-  margin-bottom: 10px;
+  margin: 10px 0;
   padding: 10px;
   border: 1px solid rgba(23, 32, 27, 0.1);
   border-radius: 8px;
@@ -118,6 +118,10 @@ button:disabled {
   text-align: center;
 }
 
+.empty-state[hidden] {
+  display: none;
+}
+
 .empty-state strong {
   font-size: 14px;
 }
@@ -138,7 +142,7 @@ button:disabled {
 
 .highlight {
   display: grid;
-  grid-template-columns: 28px minmax(0, 1fr) 62px;
+  grid-template-columns: 28px minmax(0, 1fr);
   gap: 8px;
   align-items: start;
   padding: 9px;
@@ -167,18 +171,6 @@ button:disabled {
   overflow-wrap: anywhere;
 }
 
-.highlight-meta {
-  display: block;
-  margin-top: 4px;
-  color: #79837c;
-  font-size: 10px;
-}
-
-.clip-page {
-  width: 62px;
-  font-size: 11px;
-}
-
 .primary {
   width: 100%;
   min-height: 42px;
@@ -193,15 +185,32 @@ button:disabled {
   background: #14532d;
 }
 
+#pasteHint {
+  margin: 7px 0 13px;
+  color: #667169;
+  font-size: 11px;
+  text-align: center;
+}
+
 .format-controls {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
   gap: 8px;
-  margin: 9px 0 12px;
+  margin: 10px 0;
+  padding: 9px;
+  border: 1px solid rgba(23, 32, 27, 0.1);
+  border-radius: 8px;
+  background: #fff;
   color: #465149;
   font-size: 11px;
   font-weight: 700;
+}
+
+.format-controls > label:first-child,
+.format-controls select,
+.format-controls button {
+  grid-column: 1 / -1;
 }
 
 .format-controls .checkbox {

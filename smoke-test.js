@@ -7,6 +7,7 @@ const vm = require("node:vm");
 const chromePath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
 const extensionDir = __dirname;
 const testPage = toFileUrl(path.join(extensionDir, "test-runner.html"));
+const popupTestPage = toFileUrl(path.join(extensionDir, "popup-test.html"));
 
 main().catch((error) => {
   console.error(error);
@@ -15,12 +16,36 @@ main().catch((error) => {
 
 async function main() {
   const workflow = await runWorkflowHarness();
+  const popup = await runPopupHarness();
   const background = await runBackgroundHarness();
   const injection = await runExtensionInjection();
-  const ok = workflow.ok && background.ok;
+  const ok = workflow.ok && popup.ok && background.ok;
 
-  console.log(JSON.stringify({ ok, workflow, background, extensionInjectionProbe: injection }, null, 2));
+  console.log(JSON.stringify({ ok, workflow, popup, background, extensionInjectionProbe: injection }, null, 2));
   process.exit(ok ? 0 : 1);
+}
+
+async function runPopupHarness() {
+  const result = await runChrome([
+    `--user-data-dir=${uniqueProfile("mmc-chrome-popup")}`,
+    "--headless=new",
+    "--disable-gpu",
+    "--no-first-run",
+    "--window-size=420,620",
+    "--virtual-time-budget=2500",
+    "--dump-dom",
+    popupTestPage
+  ]);
+
+  const match = result.stdout.match(/<pre id="result" hidden="">([\s\S]*?)<\/pre>/);
+  const parsed = match ? JSON.parse(unescapeHtml(match[1])) : null;
+
+  return {
+    ok: result.status === 0 && parsed?.status === "pass",
+    chromeStatus: result.status,
+    result: parsed,
+    stderr: result.stderr.slice(0, 800)
+  };
 }
 
 async function runBackgroundHarness() {

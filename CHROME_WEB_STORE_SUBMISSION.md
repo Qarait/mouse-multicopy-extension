@@ -4,7 +4,7 @@ Use this file when submitting Mouse MultiCopy to the Chrome Web Store Developer 
 
 ## Submission Status
 
-- Extension package: `dist/mouse-multicopy-0.4.0.zip`
+- Extension package: `dist/mouse-multicopy-0.4.1.zip`
 - Category: Productivity
 - Visibility recommendation for first review: Unlisted
 - Final manual QA required: Yes
@@ -71,7 +71,7 @@ Use `STORE_LISTING.md` for the short description, full description, category, pr
 
 ## Upload Assets
 
-- Package: `dist/mouse-multicopy-0.4.0.zip`
+- Package: `dist/mouse-multicopy-0.4.1.zip`
 - Icon: `icons/icon128.png`
 - Screenshot: `store-assets/screenshot-1280x800.png`
 - Privacy policy: public URL based on `PRIVACY.md`
@@ -84,10 +84,10 @@ Use `STORE_LISTING.md` for the short description, full description, category, pr
 4. Confirm the floating button shows `MC 3`.
 5. Confirm each toast shows the highlight number and a short text preview.
 6. Enter page `42`, capture another highlight, and confirm it inherits that page.
-7. Click Copy All Highlights and confirm numbered output includes the page, title, and URL.
+7. Click Copy All and confirm it copies clean paragraphs separated by blank lines.
 8. Toggle Page and Source off and confirm the copied output omits them.
 9. Open the palette and paste slot 2 into a textarea.
-10. Open Advanced, rename a highlight, and confirm the label persists.
+10. Open Options, use Copy With Details, and confirm the page, title, and URL are included.
 11. Drag a highlight to a new position and confirm the order persists.
 12. Create a second session, switch sessions, and confirm each session has separate clips.
 13. Fill the configured highlight limit, capture one extra snippet, and confirm the toast says slot 1 was replaced.

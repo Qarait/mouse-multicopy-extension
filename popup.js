@@ -21,6 +21,7 @@ const elements = {
   message: document.getElementById("message"),
   currentPage: document.getElementById("currentPage"),
   copyAll: document.getElementById("copyAll"),
+  copyFormatted: document.getElementById("copyFormatted"),
   outputFormat: document.getElementById("outputFormat"),
   includeSource: document.getElementById("includeSource"),
   includePage: document.getElementById("includePage"),
@@ -40,6 +41,7 @@ document.addEventListener("DOMContentLoaded", renderFromStorage);
 elements.enabled.addEventListener("change", updateEnabled);
 elements.currentPage.addEventListener("change", updateCurrentPage);
 elements.copyAll.addEventListener("click", copyAllHighlights);
+elements.copyFormatted.addEventListener("click", copyFormattedHighlights);
 elements.outputFormat.addEventListener("change", updateOutputSettings);
 elements.includeSource.addEventListener("change", updateOutputSettings);
 elements.includePage.addEventListener("change", updateOutputSettings);
@@ -78,6 +80,8 @@ function render(state) {
     ? `${count} saved highlight${count === 1 ? "" : "s"} in ${normalized.activeGroup.name}`
     : "No highlights saved";
   elements.copyAll.disabled = count === 0;
+  elements.copyAll.textContent = count ? `Copy All ${count}` : "Copy All";
+  elements.copyFormatted.disabled = count === 0;
   elements.emptyState.hidden = count > 0;
   elements.deleteGroup.disabled = normalized.groups.length <= 1;
   renderGroups(normalized);
@@ -100,21 +104,7 @@ function renderHighlights(state) {
     copy.className = "highlight-copy";
     copy.textContent = clip.text;
 
-    const meta = document.createElement("span");
-    meta.className = "highlight-meta";
-    meta.textContent = clip.label || clip.title || "Saved highlight";
-    copy.append(meta);
-
-    const page = document.createElement("input");
-    page.className = "clip-page";
-    page.type = "text";
-    page.maxLength = 40;
-    page.placeholder = "Page";
-    page.value = clip.page;
-    page.setAttribute("aria-label", `Page for highlight ${index + 1}`);
-    page.addEventListener("change", () => updateClipPage(index, page.value));
-
-    row.append(number, copy, page);
+    row.append(number, copy);
     elements.highlights.append(row);
   });
 }
@@ -217,18 +207,18 @@ async function updateOutputSettings() {
   showMessage("Copy format updated.");
 }
 
-async function updateClipPage(index, value) {
+async function copyAllHighlights() {
   const state = await getState();
-  if (!isValidClipIndex(state.clips, index)) {
+  const text = state.clips.map((clip) => clip.text).join("\n\n");
+  if (!text) {
+    showMessage("Start by highlighting text on a webpage.");
     return;
   }
-  const page = String(value || "").trim().slice(0, 40);
-  const clips = state.clips.map((clip, clipIndex) => clipIndex === index ? { ...clip, page } : clip);
-  await setState({ ...state, clips });
-  showMessage(page ? `Highlight ${index + 1} set to page ${page}.` : `Page cleared for highlight ${index + 1}.`);
+  await navigator.clipboard.writeText(text);
+  showMessage(`Copied. Paste once anywhere with Ctrl+V.`);
 }
 
-async function copyAllHighlights() {
+async function copyFormattedHighlights() {
   const state = await getState();
   const text = formatClips(state.clips, state);
   if (!text) {
@@ -236,7 +226,7 @@ async function copyAllHighlights() {
     return;
   }
   await navigator.clipboard.writeText(text);
-  showMessage(`Copied ${state.clips.length} highlight${state.clips.length === 1 ? "" : "s"} - paste anywhere.`);
+  showMessage("Copied with details.");
 }
 
 async function updateMaxSlots() {

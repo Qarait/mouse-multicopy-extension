@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mouse MultiCopy Popup Test</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <h1>Mouse MultiCopy</h1>
+          <p id="summary">No highlights saved</p>
+        </div>
+        <label class="switch">
+          <input id="enabled" type="checkbox">
+          <span>Collect</span>
+        </label>
+      </header>
+
+      <section id="emptyState" class="empty-state">
+        <strong>Highlight text to begin.</strong>
+        <span>Each selection will be saved automatically.</span>
+      </section>
+
+      <section id="highlights" aria-label="Saved highlights"></section>
+      <button id="copyAll" class="primary" type="button">Copy All</button>
+      <p id="pasteHint">Then paste once anywhere with Ctrl+V.</p>
+
+      <details id="advanced">
+        <summary>Options</summary>
+        <section class="page-control">
+          <label for="currentPage">Page for new highlights</label>
+          <input id="currentPage" type="text">
+        </section>
+        <section class="format-controls">
+          <label for="outputFormat">Detailed copy format</label>
+          <select id="outputFormat">
+            <option value="numbered">Numbered</option>
+            <option value="bullets">Bullets</option>
+            <option value="plain">Plain paragraphs</option>
+          </select>
+          <label class="checkbox" for="includePage"><input id="includePage" type="checkbox"><span>Include page</span></label>
+          <label class="checkbox" for="includeSource"><input id="includeSource" type="checkbox"><span>Include source</span></label>
+          <button id="copyFormatted" type="button">Copy With Details</button>
+        </section>
+        <section class="advanced-actions">
+          <button id="capture" type="button">Capture Selection</button>
+          <button id="clear" type="button">Clear Session</button>
+        </section>
+        <section class="groups">
+          <label for="groupSelect">Session</label>
+          <select id="groupSelect"></select>
+          <button id="newGroup" type="button">New</button>
+          <button id="renameGroup" type="button">Rename</button>
+          <button id="deleteGroup" type="button">Delete</button>
+        </section>
+        <section class="settings">
+          <label for="maxSlots">Highlight limit<input id="maxSlots" type="number"></label>
+          <label for="minChars">Min chars<input id="minChars" type="number"></label>
+          <label class="checkbox" for="ignoreDuplicates"><input id="ignoreDuplicates" type="checkbox"><span>Skip duplicates</span></label>
+        </section>
+        <section id="slots"></section>
+      </details>
+      <p id="message" role="status"></p>
+      <pre id="result" hidden></pre>
+    </main>
+
+    <script>
+      (() => {
+        const state = {
+          enabled: true,
+          maxSlots: 12,
+          minChars: 3,
+          ignoreDuplicates: true,
+          currentPage: "42",
+          outputFormat: "numbered",
+          includeSource: true,
+          includePage: true,
+          activeGroupId: "default",
+          clips: [
+            { id: "1", text: "First selected paragraph", page: "42", title: "Test article", url: "https://example.com", capturedAt: 1 },
+            { id: "2", text: "Second selected paragraph", page: "42", title: "Test article", url: "https://example.com", capturedAt: 2 },
+            { id: "3", text: "Third selected paragraph", page: "42", title: "Test article", url: "https://example.com", capturedAt: 3 }
+          ]
+        };
+        const listeners = [];
+        window.__popupTest = { clipboardText: "" };
+        window.chrome = {
+          storage: {
+            local: {
+              async get() { return { mouseMultiCopyState: state }; },
+              async set(value) {
+                Object.assign(state, value.mouseMultiCopyState);
+                listeners.forEach((listener) => listener({
+                  mouseMultiCopyState: { newValue: state }
+                }, "local"));
+              }
+            },
+            onChanged: {
+              addListener(listener) { listeners.push(listener); }
+            }
+          },
+          tabs: {
+            async query() { return []; },
+            async sendMessage() { return { ok: false }; }
+          }
+        };
+        Object.defineProperty(navigator, "clipboard", {
+          configurable: true,
+          value: {
+            async writeText(text) { window.__popupTest.clipboardText = text; }
+          }
+        });
+      })();
+    </script>
+    <script src="popup.js"></script>
+    <script>
+      window.addEventListener("load", async () => {
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        document.getElementById("copyAll").click();
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        const plainText = window.__popupTest.clipboardText;
+        const result = {
+          status: "pass",
+          highlightCount: document.querySelectorAll(".highlight").length,
+          copyText: document.getElementById("copyAll").textContent,
+          emptyDisplay: getComputedStyle(document.getElementById("emptyState")).display,
+          optionsOpen: document.getElementById("advanced").open,
+          plainText
+        };
+        if (
+          result.highlightCount !== 3 ||
+          result.copyText !== "Copy All 3" ||
+          result.emptyDisplay !== "none" ||
+          result.optionsOpen ||
+          plainText !== "First selected paragraph\n\nSecond selected paragraph\n\nThird selected paragraph"
+        ) {
+          result.status = "fail";
+        }
+        document.getElementById("result").textContent = JSON.stringify(result);
+      });
+    </script>
+  </body>
+</html>

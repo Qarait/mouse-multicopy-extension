@@ -7,9 +7,9 @@ The default workflow is intentionally simple:
 1. Highlight text on a web page.
 2. See a tiny confirmation such as `Highlight 2 saved`.
 3. Keep highlighting while the extension remembers the text, source, and optional page.
-4. Click `Copy All Highlights` and paste the formatted collection into Word, Notepad, email, or another app.
+4. Click `Copy All` and paste the paragraphs into Word, Notepad, email, or another app.
 
-Individual slot paste, naming, reordering, sessions, and capture tuning remain available under Advanced.
+Page/source formatting, individual slot paste, naming, reordering, sessions, and capture tuning remain available under Options.
 
 ## Realistic Capacity
 
@@ -61,7 +61,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File mouse-multicopy-extension\sc
 The upload package is created at:
 
 ```text
-mouse-multicopy-extension\dist\mouse-multicopy-0.4.0.zip
+mouse-multicopy-extension\dist\mouse-multicopy-0.4.1.zip
 ```
 
 The package contains only the runtime extension files, not tests or draft store docs.
@@ -70,9 +70,9 @@ The package contains only the runtime extension files, not tests or draft store 
 
 - Collect mode is on by default.
 - Highlight text with the mouse to capture it into the next slot.
-- Enter an optional page number before highlighting; each new highlight inherits it.
-- Open the popup and click `Copy All Highlights` to copy a numbered, bulleted, or plain collection.
-- Choose whether copied output includes page and source details.
+- Open the popup and click `Copy All` to copy every saved paragraph as clean plain text.
+- Paste once anywhere with `Ctrl+V`.
+- Open Options only when you want page numbers, source details, or special formatting.
 - The extension icon badge shows the current number of saved highlights.
 - Click the `MC` button at the bottom-right of the page to open slots.
 - Click a numbered slot to paste it into the focused text field.
@@ -83,7 +83,7 @@ The package contains only the runtime extension files, not tests or draft store 
 - Use undo after accidental captures.
 - If the quick-slot list is full, the extension warns when slot 1 is replaced.
 - Delete individual slots from the page palette or popup.
-- Open Advanced in the popup to pause collection, manually capture, copy, clear, manage sessions, set the highlight limit, set minimum capture length, or disable duplicate protection.
+- Open Options in the popup to pause collection, manually capture, copy with details, clear, manage sessions, set the highlight limit, set minimum capture length, or disable duplicate protection.
 
 ## Shortcuts
 

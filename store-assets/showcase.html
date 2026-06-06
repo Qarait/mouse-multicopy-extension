@@ -80,28 +80,9 @@
       h2 { margin: 0 0 3px; font-size: 20px; }
       .summary { color: #59645d; font-size: 12px; }
       .collect { font-size: 12px; font-weight: 800; }
-      .page-input {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-        padding: 10px;
-        border: 1px solid rgba(23, 32, 27, 0.1);
-        border-radius: 8px;
-        background: #fff;
-        font-size: 12px;
-        font-weight: 750;
-      }
-      .page-value {
-        width: 80px;
-        padding: 7px 9px;
-        border: 1px solid rgba(23, 32, 27, 0.16);
-        border-radius: 7px;
-        background: #fff;
-      }
       .highlight {
         display: grid;
-        grid-template-columns: 28px minmax(0, 1fr) 56px;
+        grid-template-columns: 28px minmax(0, 1fr);
         gap: 8px;
         align-items: start;
         margin-bottom: 7px;
@@ -122,8 +103,6 @@
         font-weight: 800;
       }
       .text { color: #354139; font-size: 12px; line-height: 1.35; }
-      .source { display: block; margin-top: 4px; color: #79837c; font-size: 10px; }
-      .page-tag { color: #59645d; font-size: 11px; text-align: right; }
       .copy-all {
         width: 100%;
         margin-top: 4px;
@@ -136,13 +115,12 @@
         font-weight: 800;
       }
       .format {
-        margin-top: 9px;
+        margin: 9px 0 12px;
         color: #59645d;
         font-size: 11px;
         text-align: center;
       }
-      .advanced {
-        margin-top: 12px;
+      .options {
         padding-top: 10px;
         border-top: 1px solid rgba(23, 32, 27, 0.12);
         color: #59645d;
@@ -172,32 +150,25 @@
         <div class="header">
           <div>
             <h2>Mouse MultiCopy</h2>
-            <div class="summary">3 saved highlights in Book Notes</div>
+            <div class="summary">3 saved highlights</div>
           </div>
           <div class="collect">Collect: On</div>
         </div>
-        <div class="page-input">
-          <span>Page for new highlights</span>
-          <span class="page-value">42</span>
-        </div>
         <div class="highlight">
           <span class="number">1</span>
-          <span class="text">The strongest notes preserve both the original idea...<span class="source">The Art of Reading</span></span>
-          <span class="page-tag">page 41</span>
+          <span class="text">The strongest notes preserve both the original idea and enough context to find it again.</span>
         </div>
         <div class="highlight">
           <span class="number">2</span>
-          <span class="text">A useful collection should stay out of the way...<span class="source">The Art of Reading</span></span>
-          <span class="page-tag">page 42</span>
+          <span class="text">A useful collection should stay out of the way while you read.</span>
         </div>
         <div class="highlight">
           <span class="number">3</span>
-          <span class="text">Page numbers and sources turn loose quotations...<span class="source">The Art of Reading</span></span>
-          <span class="page-tag">page 42</span>
+          <span class="text">Page numbers and sources turn loose quotations into usable research.</span>
         </div>
-        <button class="copy-all" type="button">Copy All Highlights</button>
-        <div class="format">Numbered | Page on | Source on</div>
-        <div class="advanced">Advanced</div>
+        <button class="copy-all" type="button">Copy All 3</button>
+        <div class="format">Then paste once anywhere with Ctrl+V.</div>
+        <div class="options">Options</div>
       </aside>
     </main>
   </body>

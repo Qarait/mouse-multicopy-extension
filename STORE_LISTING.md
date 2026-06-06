@@ -8,9 +8,9 @@ Collect webpage highlights with page and source details, then paste them anywher
 
 Mouse MultiCopy is a simple highlight collector for people who read, research, and take notes from web pages.
 
-Highlight text on a page and Mouse MultiCopy saves it as Highlight 1. Highlight again and it saves Highlight 2. A small confirmation shows what was captured. When you are ready, click Copy All Highlights and paste the complete collection into Word, Notepad, email, or another app.
+Highlight text on a page and Mouse MultiCopy saves it as Highlight 1. Highlight again and it saves Highlight 2. A small confirmation shows what was captured. When you are ready, click Copy All and paste every paragraph at once into Word, Notepad, email, or another app.
 
-Add an optional page number while reading and choose whether the final output includes page and source details. Numbered, bulleted, and plain paragraph formats are available.
+The default experience stays deliberately simple. Optional page numbers, source details, numbered output, sessions, and individual controls are kept under Options.
 
 Features:
 
@@ -19,7 +19,7 @@ Features:
 - Add page numbers to new highlights or edit them individually
 - Include or omit page titles and URLs
 - See the saved highlight count on the extension icon
-- Start with a simple interface; open Advanced only when needed
+- Start with a simple interface; open Options only when needed
 - Paste a chosen slot into focused text fields and editors
 - Rename slots to describe what each saved snippet is
 - Drag slots to reorder them before pasting
@@ -60,7 +60,7 @@ https://gist.github.com/Qarait/15671558d14faa3e1ed75e4886923f6c
 - `icons/icon128.png`
 - `store-assets/screenshot-1280x800.png`
 - `PRIVACY.md`
-- Distribution ZIP from `dist/mouse-multicopy-0.4.0.zip`
+- Distribution ZIP from `dist/mouse-multicopy-0.4.1.zip`
 
 ## Manual QA Before Submission
 
@@ -69,7 +69,7 @@ https://gist.github.com/Qarait/15671558d14faa3e1ed75e4886923f6c
 - Highlight three separate text snippets.
 - Confirm the page widget shows `MC 3`.
 - Confirm each capture toast includes its number and a short preview.
-- Set a page number, click Copy All Highlights, and confirm the formatted output includes it.
+- Open Options, set a page number, click Copy With Details, and confirm the formatted output includes it.
 - Confirm the toolbar icon badge shows `3`.
 - Focus a textarea or input.
 - Paste slot 2 and confirm the correct snippet appears.

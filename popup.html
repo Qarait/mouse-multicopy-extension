@@ -19,39 +19,41 @@
         </label>
       </header>
 
-      <section class="page-control" aria-label="Page number">
-        <label for="currentPage">Page for new highlights</label>
-        <input id="currentPage" type="text" maxlength="40" placeholder="Optional, e.g. 42">
-      </section>
-
       <section id="emptyState" class="empty-state">
-        <strong>Start reading.</strong>
-        <span>Highlight text on a webpage and it will appear here.</span>
+        <strong>Highlight text to begin.</strong>
+        <span>Each selection will be saved automatically.</span>
       </section>
 
       <section id="highlights" aria-label="Saved highlights"></section>
 
-      <button id="copyAll" class="primary" type="button">Copy All Highlights</button>
-
-      <section class="format-controls" aria-label="Copy format">
-        <label for="outputFormat">Format</label>
-        <select id="outputFormat">
-          <option value="numbered">Numbered</option>
-          <option value="bullets">Bullets</option>
-          <option value="plain">Plain paragraphs</option>
-        </select>
-        <label class="checkbox" for="includePage">
-          <input id="includePage" type="checkbox">
-          <span>Page</span>
-        </label>
-        <label class="checkbox" for="includeSource">
-          <input id="includeSource" type="checkbox">
-          <span>Source</span>
-        </label>
-      </section>
+      <button id="copyAll" class="primary" type="button">Copy All</button>
+      <p id="pasteHint">Then paste once anywhere with Ctrl+V.</p>
 
       <details id="advanced">
-        <summary>Advanced</summary>
+        <summary>Options</summary>
+
+        <section class="page-control" aria-label="Page number">
+          <label for="currentPage">Page for new highlights</label>
+          <input id="currentPage" type="text" maxlength="40" placeholder="Optional, e.g. 42">
+        </section>
+
+        <section class="format-controls" aria-label="Copy with details">
+          <label for="outputFormat">Detailed copy format</label>
+          <select id="outputFormat">
+            <option value="numbered">Numbered</option>
+            <option value="bullets">Bullets</option>
+            <option value="plain">Plain paragraphs</option>
+          </select>
+          <label class="checkbox" for="includePage">
+            <input id="includePage" type="checkbox">
+            <span>Include page</span>
+          </label>
+          <label class="checkbox" for="includeSource">
+            <input id="includeSource" type="checkbox">
+            <span>Include source</span>
+          </label>
+          <button id="copyFormatted" type="button">Copy With Details</button>
+        </section>
 
         <section class="advanced-actions" aria-label="Actions">
           <button id="capture" type="button">Capture Selection</button>
