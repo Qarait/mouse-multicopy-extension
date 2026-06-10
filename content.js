@@ -21,6 +21,9 @@
   let lastUndoClipId = null;
   let captureTimer = null;
   let toastTimer = null;
+  let dragState = null;
+  let suppressToggleClick = false;
+  let resizeTimer = null;
 
   init();
 
@@ -36,6 +39,7 @@
     }, true);
     document.addEventListener("focusin", rememberEditable, true);
     document.addEventListener("pointerdown", rememberEditable, true);
+    window.addEventListener("resize", scheduleWidgetConstraint);
 
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area === "local" && changes[STORAGE_KEY]) {
@@ -97,6 +101,7 @@
     undoButton = widget.querySelector("#mmc-undo");
     enabledButton = widget.querySelector("#mmc-enabled");
     const options = widget.querySelector("#mmc-options");
+    const header = widget.querySelector("#mmc-header");
     const expandButton = widget.querySelector("#mmc-expand");
     const collapseButton = widget.querySelector("#mmc-collapse");
 
@@ -105,13 +110,23 @@
         event.preventDefault();
       }
     });
-    toggleButton.addEventListener("click", () => widget.classList.toggle("mmc-open"));
+    makeWidgetDraggable(header);
+    makeWidgetDraggable(toggleButton, { suppressClick: true });
+    toggleButton.addEventListener("click", () => {
+      if (suppressToggleClick) {
+        suppressToggleClick = false;
+        return;
+      }
+      widget.classList.toggle("mmc-open");
+      scheduleWidgetConstraint();
+    });
     expandButton.addEventListener("click", () => {
       const expanded = widget.classList.toggle("mmc-expanded");
       expandButton.setAttribute("aria-expanded", String(expanded));
       expandButton.setAttribute("aria-label", expanded ? "Contract highlights panel" : "Expand highlights panel");
       expandButton.title = expanded ? "Contract panel" : "Expand panel";
       expandButton.textContent = expanded ? "\u2921" : "\u2922";
+      scheduleWidgetConstraint();
     });
     collapseButton.addEventListener("click", () => widget.classList.remove("mmc-open"));
     undoButton.addEventListener("click", undoLastCapture);
@@ -121,6 +136,132 @@
     options.addEventListener("toggle", () => {
       widget.classList.toggle("mmc-options-open", options.open);
     });
+  }
+
+  function makeWidgetDraggable(handle, options = {}) {
+    handle.addEventListener("pointerdown", (event) => {
+      if (
+        event.button !== 0 ||
+        event.target.closest(".mmc-header-button") ||
+        dragState
+      ) {
+        return;
+      }
+
+      const bounds = widget.getBoundingClientRect();
+      widget.style.left = `${Math.round(bounds.left)}px`;
+      widget.style.top = `${Math.round(bounds.top)}px`;
+      widget.style.right = "auto";
+      widget.style.bottom = "auto";
+      dragState = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        originX: bounds.left,
+        originY: bounds.top,
+        moved: false,
+        suppressClick: Boolean(options.suppressClick)
+      };
+      widget.classList.add("mmc-dragging");
+      try {
+        handle.setPointerCapture(event.pointerId);
+      } catch (_error) {
+        // Synthetic test events and older browsers may not expose pointer capture.
+      }
+      event.preventDefault();
+    });
+
+    handle.addEventListener("pointermove", (event) => {
+      if (!dragState || event.pointerId !== dragState.pointerId) {
+        return;
+      }
+
+      const deltaX = event.clientX - dragState.startX;
+      const deltaY = event.clientY - dragState.startY;
+      if (!dragState.moved && Math.hypot(deltaX, deltaY) < 4) {
+        return;
+      }
+
+      dragState.moved = true;
+      setWidgetPosition(dragState.originX + deltaX, dragState.originY + deltaY);
+      event.preventDefault();
+    });
+
+    const finishDrag = async (event) => {
+      if (!dragState || event.pointerId !== dragState.pointerId) {
+        return;
+      }
+
+      const completedDrag = dragState;
+      dragState = null;
+      widget.classList.remove("mmc-dragging");
+      if (!completedDrag.moved) {
+        return;
+      }
+
+      if (completedDrag.suppressClick) {
+        suppressToggleClick = true;
+        setTimeout(() => {
+          suppressToggleClick = false;
+        }, 300);
+      }
+      await persistWidgetPosition();
+    };
+
+    handle.addEventListener("pointerup", finishDrag);
+    handle.addEventListener("pointercancel", finishDrag);
+  }
+
+  function setWidgetPosition(x, y) {
+    const bounds = widget.getBoundingClientRect();
+    const margin = 8;
+    const maxX = Math.max(margin, window.innerWidth - bounds.width - margin);
+    const maxY = Math.max(margin, window.innerHeight - bounds.height - margin);
+    const nextX = Math.max(margin, Math.min(maxX, x));
+    const nextY = Math.max(margin, Math.min(maxY, y));
+
+    widget.style.left = `${Math.round(nextX)}px`;
+    widget.style.top = `${Math.round(nextY)}px`;
+    widget.style.right = "auto";
+    widget.style.bottom = "auto";
+  }
+
+  function scheduleWidgetConstraint() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(async () => {
+      if (!widget.style.left || dragState) {
+        return;
+      }
+      const x = Number.parseFloat(widget.style.left);
+      const y = Number.parseFloat(widget.style.top);
+      setWidgetPosition(x, y);
+      await persistWidgetPosition();
+    }, 50);
+  }
+
+  async function persistWidgetPosition() {
+    const x = Number.parseFloat(widget.style.left);
+    const y = Number.parseFloat(widget.style.top);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) {
+      return;
+    }
+
+    const state = await getState();
+    if (state.widgetPosition?.x === Math.round(x) && state.widgetPosition?.y === Math.round(y)) {
+      return;
+    }
+    await setState({ ...state, widgetPosition: { x, y } });
+  }
+
+  function applyWidgetPosition(position) {
+    if (!position || dragState) {
+      return;
+    }
+    widget.style.left = `${position.x}px`;
+    widget.style.top = `${position.y}px`;
+    widget.style.right = "auto";
+    widget.style.bottom = "auto";
+    scheduleWidgetConstraint();
   }
 
   async function handleMessage(message) {
@@ -478,8 +619,9 @@
     toggleButton.dataset.enabled = String(normalized.enabled);
     enabledButton.textContent = normalized.enabled ? "Pause collection" : "Resume collection";
     toggleButton.title = normalized.enabled
-      ? "Collect mode is on. Highlight text to save it."
-      : "Collect mode is paused. Use the popup or shortcut to capture manually.";
+      ? "Collect mode is on. Click to open or drag to move."
+      : "Collect mode is paused. Click to open or drag to move.";
+    applyWidgetPosition(normalized.widgetPosition);
 
     widget.querySelector("#mmc-title").textContent = normalized.activeGroup.name === "Default"
       ? "Highlights"

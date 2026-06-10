@@ -56,12 +56,16 @@ function runSharedStateHarness() {
       && state.activeGroupId === "default"
       && state.outputFormat === "plain"
       && state.includeSource === false
-      && state.includePage === false,
+      && state.includePage === false
+      && state.widgetPosition === null
+      && context.MouseMultiCopyState.normalizeWidgetPosition({ x: 24.4, y: 51.7 }).x === 24
+      && context.MouseMultiCopyState.normalizeWidgetPosition({ x: 24.4, y: 51.7 }).y === 52,
     clips: state.clips.map((clip) => clip.text),
     defaults: {
       outputFormat: state.outputFormat,
       includeSource: state.includeSource,
-      includePage: state.includePage
+      includePage: state.includePage,
+      widgetPosition: state.widgetPosition
     }
   };
 }

@@ -115,6 +115,37 @@
         throw new Error(`Phrase not found: ${phrase}`);
       }
 
+      function dragHandle(handle, deltaX, deltaY, pointerId) {
+        const bounds = handle.getBoundingClientRect();
+        const startX = bounds.left + Math.min(20, bounds.width / 2);
+        const startY = bounds.top + Math.min(20, bounds.height / 2);
+        const eventOptions = {
+          bubbles: true,
+          cancelable: true,
+          button: 0,
+          buttons: 1,
+          pointerId,
+          pointerType: "mouse"
+        };
+
+        handle.dispatchEvent(new PointerEvent("pointerdown", {
+          ...eventOptions,
+          clientX: startX,
+          clientY: startY
+        }));
+        handle.dispatchEvent(new PointerEvent("pointermove", {
+          ...eventOptions,
+          clientX: startX + deltaX,
+          clientY: startY + deltaY
+        }));
+        handle.dispatchEvent(new PointerEvent("pointerup", {
+          ...eventOptions,
+          buttons: 0,
+          clientX: startX + deltaX,
+          clientY: startY + deltaY
+        }));
+      }
+
       async function run() {
         const result = document.getElementById("result");
 
@@ -195,11 +226,46 @@
           if (widget.classList.contains("mmc-open")) {
             throw new Error("Expected close to collapse the panel without removing the MC button.");
           }
-          document.getElementById("mmc-toggle").click();
+
+          const toggle = document.getElementById("mmc-toggle");
+          dragHandle(toggle, -Math.round(window.innerWidth / 2), -Math.round(window.innerHeight / 2), 11);
+          await wait(150);
+          const collapsedPosition = window.__mmcTest.getState().widgetPosition;
+          const collapsedBounds = widget.getBoundingClientRect();
+          if (
+            !collapsedPosition ||
+            collapsedBounds.left < 8 ||
+            collapsedBounds.top < 8 ||
+            collapsedBounds.right > window.innerWidth - 8 ||
+            collapsedBounds.bottom > window.innerHeight - 8
+          ) {
+            throw new Error("Expected the collapsed MC bar to move, persist, and remain inside the viewport.");
+          }
+
+          toggle.click();
+          await wait(20);
+          if (widget.classList.contains("mmc-open")) {
+            throw new Error("Expected dragging the MC bar not to trigger its click action.");
+          }
+          toggle.click();
           await wait(50);
           if (!widget.classList.contains("mmc-open")) {
             throw new Error("Expected the MC button to reopen the collapsed panel.");
           }
+
+          dragHandle(document.getElementById("mmc-header"), -window.innerWidth, -window.innerHeight, 12);
+          await wait(150);
+          const openPosition = window.__mmcTest.getState().widgetPosition;
+          const openBounds = widget.getBoundingClientRect();
+          if (
+            openPosition?.x !== 8 ||
+            openPosition?.y !== 8 ||
+            Math.round(openBounds.left) !== 8 ||
+            Math.round(openBounds.top) !== 8
+          ) {
+            throw new Error("Expected the open panel header to move the widget to the top-left and persist its position.");
+          }
+
           const options = document.getElementById("mmc-options");
           options.open = true;
           options.dispatchEvent(new Event("toggle"));
@@ -329,6 +395,7 @@
             pasted: target.value,
             copiedAll,
             expanded: widget.classList.contains("mmc-expanded"),
+            widgetPosition: window.__mmcTest.getState().widgetPosition,
             widgetWidth: Math.round(widgetBounds.width),
             viewportWidth: window.innerWidth
           });

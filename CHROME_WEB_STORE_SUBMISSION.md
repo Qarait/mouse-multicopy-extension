@@ -4,7 +4,7 @@ Use this file when submitting Mouse MultiCopy to the Chrome Web Store Developer 
 
 ## Submission Status
 
-- Extension package: `dist/mouse-multicopy-0.5.2.zip`
+- Extension package: `dist/mouse-multicopy-0.5.3.zip`
 - Category: Productivity
 - Visibility recommendation for first review: Unlisted
 - Final manual QA required: Yes
@@ -71,7 +71,7 @@ Use `STORE_LISTING.md` for the short description, full description, category, pr
 
 ## Upload Assets
 
-- Package: `dist/mouse-multicopy-0.5.2.zip`
+- Package: `dist/mouse-multicopy-0.5.3.zip`
 - Icon: `icons/icon128.png`
 - Screenshot: `store-assets/screenshot-1280x800.png`
 - Privacy policy: public URL based on `PRIVACY.md`

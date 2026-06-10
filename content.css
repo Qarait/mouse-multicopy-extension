@@ -40,6 +40,9 @@
   gap: 8px;
   padding: 11px 12px 9px;
   border-bottom: 1px solid rgba(23, 32, 27, 0.08);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
 }
 
 #mmc-title {
@@ -268,7 +271,15 @@
   background: #17201b;
   color: #fff;
   box-shadow: 0 10px 26px rgba(23, 32, 27, 0.2);
+  cursor: grab;
   font-size: 12px;
+  touch-action: none;
+  user-select: none;
+}
+
+#mmc-widget.mmc-dragging #mmc-header,
+#mmc-widget.mmc-dragging #mmc-toggle {
+  cursor: grabbing;
 }
 
 #mmc-toggle[data-enabled="false"] {

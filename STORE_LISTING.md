@@ -63,7 +63,7 @@ https://gist.github.com/Qarait/15671558d14faa3e1ed75e4886923f6c
 - `icons/icon128.png`
 - `store-assets/screenshot-1280x800.png`
 - `PRIVACY.md`
-- Distribution ZIP from `dist/mouse-multicopy-0.5.2.zip`
+- Distribution ZIP from `dist/mouse-multicopy-0.5.3.zip`
 
 ## Manual QA Before Submission
 

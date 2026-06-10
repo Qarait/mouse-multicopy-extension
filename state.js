@@ -8,6 +8,7 @@
     outputFormat: "plain",
     includeSource: false,
     includePage: false,
+    widgetPosition: null,
     activeGroupId: "default",
     groups: [],
     clips: []
@@ -36,6 +37,7 @@
         : DEFAULT_STATE.outputFormat,
       includeSource: typeof state?.includeSource === "boolean" ? state.includeSource : DEFAULT_STATE.includeSource,
       includePage: typeof state?.includePage === "boolean" ? state.includePage : DEFAULT_STATE.includePage,
+      widgetPosition: normalizeWidgetPosition(state?.widgetPosition),
       activeGroupId,
       activeGroup,
       groups: normalizedGroups,
@@ -87,6 +89,14 @@
     return Number.isFinite(number) ? Math.max(min, Math.min(max, Math.round(number))) : fallback;
   }
 
+  function normalizeWidgetPosition(position) {
+    const x = Number(position?.x);
+    const y = Number(position?.y);
+    return Number.isFinite(x) && Number.isFinite(y)
+      ? { x: Math.max(0, Math.round(x)), y: Math.max(0, Math.round(y)) }
+      : null;
+  }
+
   function createClipId(seed) {
     return `${seed}-${Math.random().toString(36).slice(2, 10)}`;
   }
@@ -103,6 +113,7 @@
     DEFAULT_STATE,
     normalizeState,
     clampNumber,
+    normalizeWidgetPosition,
     createClipId,
     createGroupId,
     isValidClipIndex
