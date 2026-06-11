@@ -199,6 +199,12 @@ h1 {
   border-left-color: #45a4de;
 }
 
+.firefox-mark {
+  border-top-color: #7a4ce0;
+  border-right-color: #e15a3a;
+  border-bottom-color: #f5a623;
+}
+
 .availability {
   margin: 12px 0 0;
   color: var(--muted);

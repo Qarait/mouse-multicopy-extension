@@ -2,8 +2,12 @@ document.getElementById("year").textContent = new Date().getFullYear();
 
 const storeLinks = {
   chrome: "",
-  edge: ""
+  edge: "",
+  firefox: ""
 };
+
+// Firefox listing after approval:
+// https://addons.mozilla.org/en-US/firefox/addon/mouse-multicopy/
 
 function activateStoreButton(selector, url, label) {
   if (!url) {
@@ -28,4 +32,9 @@ activateStoreButton(
   '[data-store="edge"]',
   storeLinks.edge,
   "Get Mouse MultiCopy for Microsoft Edge"
+);
+activateStoreButton(
+  '[data-store="firefox"]',
+  storeLinks.firefox,
+  "Get Mouse MultiCopy for Firefox"
 );
