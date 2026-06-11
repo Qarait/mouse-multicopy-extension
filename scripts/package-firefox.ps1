@@ -43,6 +43,28 @@ if (Test-Path $zipPath) {
   Remove-Item -LiteralPath $zipPath -Force
 }
 
-Compress-Archive -Path (Join-Path $buildDir "*") -DestinationPath $zipPath -Force
+Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+$archive = [System.IO.Compression.ZipFile]::Open(
+  $zipPath,
+  [System.IO.Compression.ZipArchiveMode]::Create
+)
+
+try {
+  Get-ChildItem -LiteralPath $buildDir -File -Recurse | ForEach-Object {
+    $relativePath = $_.FullName.Substring($buildDir.Length).TrimStart("\", "/")
+    $entryName = $relativePath.Replace("\", "/")
+    [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
+      $archive,
+      $_.FullName,
+      $entryName,
+      [System.IO.Compression.CompressionLevel]::Optimal
+    ) | Out-Null
+  }
+}
+finally {
+  $archive.Dispose()
+}
 
 Write-Output "Created $zipPath"
