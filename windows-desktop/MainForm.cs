@@ -229,9 +229,9 @@ namespace MouseMultiCopy.Windows
             secondary.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             secondary.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             var clearButton = CreateSecondaryButton("Clear all");
-            var hideButton = CreateSecondaryButton("Hide to tray");
+            var hideButton = CreateSecondaryButton("Minimize");
             clearButton.Click += delegate { ConfirmClear(); };
-            hideButton.Click += delegate { HideToTray(); };
+            hideButton.Click += delegate { WindowState = FormWindowState.Minimized; };
             secondary.Controls.Add(clearButton, 0, 0);
             secondary.Controls.Add(hideButton, 1, 0);
 

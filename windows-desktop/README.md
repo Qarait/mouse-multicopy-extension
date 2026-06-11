@@ -10,6 +10,9 @@ keeps it in a numbered list.
 3. Each unique text copy becomes the next saved highlight.
 4. Open Mouse MultiCopy and choose Copy, Paste, Delete, or Copy All.
 
+The **Minimize** button keeps Mouse MultiCopy visible on the Windows taskbar.
+Closing the window with `X` keeps collection running from the system tray.
+
 ## Shortcuts
 
 - `Alt+Shift+V`: show or hide Mouse MultiCopy.

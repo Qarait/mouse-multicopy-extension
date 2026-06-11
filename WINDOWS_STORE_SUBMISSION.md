@@ -70,9 +70,10 @@ Privacy:
 5. Click Copy All and paste into Notepad.
 6. Use individual Paste and confirm it returns to the previous app.
 7. Pause collection and confirm new clipboard text is ignored.
-8. Close the window and confirm the tray app remains active.
-9. Reopen with `Alt+Shift+V`.
-10. Paste all with `Alt+Shift+A`.
+8. Click Minimize and confirm the app remains visible on the taskbar.
+9. Close the window with `X` and confirm the tray app remains active.
+10. Reopen with `Alt+Shift+V`.
+11. Paste all with `Alt+Shift+A`.
 
 Before submission, run the Windows App Certification Kit against the final
 Partner Center identity package.
