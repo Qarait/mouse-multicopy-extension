@@ -638,30 +638,44 @@
       slot.className = "mmc-slot";
       slot.draggable = true;
       slot.dataset.index = index;
-      slot.innerHTML = `
-        <span class="mmc-number">${index + 1}</span>
-        <span class="mmc-body">
-          <span class="mmc-label"></span>
-          <span class="mmc-preview"></span>
-        </span>
-        <span class="mmc-item-actions">
-          <button class="mmc-copy" type="button">Copy</button>
-          <button class="mmc-paste" type="button">Paste</button>
-          <button class="mmc-delete" type="button" aria-label="Delete highlight ${index + 1}">Delete</button>
-        </span>
-      `;
+      const number = document.createElement("span");
+      number.className = "mmc-number";
+      number.textContent = String(index + 1);
 
-      const copyButton = slot.querySelector(".mmc-copy");
-      const pasteButton = slot.querySelector(".mmc-paste");
-      slot.querySelector(".mmc-label").textContent = clip.label || `Highlight ${index + 1}`;
-      slot.querySelector(".mmc-preview").textContent = clip.text;
+      const body = document.createElement("span");
+      body.className = "mmc-body";
+      const label = document.createElement("span");
+      label.className = "mmc-label";
+      label.textContent = clip.label || `Highlight ${index + 1}`;
+      const preview = document.createElement("span");
+      preview.className = "mmc-preview";
+      preview.textContent = clip.text;
+      body.append(label, preview);
+
+      const actions = document.createElement("span");
+      actions.className = "mmc-item-actions";
+      const copyButton = document.createElement("button");
+      copyButton.className = "mmc-copy";
+      copyButton.type = "button";
+      copyButton.textContent = "Copy";
+      const pasteButton = document.createElement("button");
+      pasteButton.className = "mmc-paste";
+      pasteButton.type = "button";
+      pasteButton.textContent = "Paste";
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "mmc-delete";
+      deleteButton.type = "button";
+      deleteButton.setAttribute("aria-label", `Delete highlight ${index + 1}`);
+      deleteButton.textContent = "Delete";
+      actions.append(copyButton, pasteButton, deleteButton);
+      slot.append(number, body, actions);
       copyButton.addEventListener("click", async () => {
         if (await copyToClipboard(clip.text)) {
           showToast(`Copied highlight ${index + 1}.`);
         }
       });
       pasteButton.addEventListener("click", () => insertOrCopyText(clip.text));
-      slot.querySelector(".mmc-body").addEventListener("dblclick", (event) => {
+      body.addEventListener("dblclick", (event) => {
         event.preventDefault();
         event.stopPropagation();
         promptRenameClip(index);
@@ -687,7 +701,6 @@
         reorderClip(fromIndex, index);
       });
 
-      const deleteButton = slot.querySelector(".mmc-delete");
       deleteButton.addEventListener("click", () => deleteClip(index));
 
       slotsNode.appendChild(slot);

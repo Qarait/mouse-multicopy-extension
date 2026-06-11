@@ -1,0 +1,57 @@
+{
+  "manifest_version": 3,
+  "name": "Mouse MultiCopy",
+  "version": "0.5.3",
+  "description": "Collect webpage highlights and copy them all in one clean document.",
+  "permissions": ["clipboardWrite", "storage"],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_popup": "popup.html",
+    "default_title": "Mouse MultiCopy"
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["state.js", "clipboard.js", "content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "commands": {
+    "capture-selection": {
+      "suggested_key": {
+        "default": "Alt+Shift+C"
+      },
+      "description": "Capture the current text selection"
+    },
+    "toggle-palette": {
+      "suggested_key": {
+        "default": "Alt+Shift+V"
+      },
+      "description": "Show or hide the Mouse MultiCopy paste palette"
+    }
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "mouse-multicopy@qarait.github",
+      "strict_min_version": "142.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  }
+}

@@ -81,6 +81,18 @@ mouse-multicopy-extension\dist\mouse-multicopy-0.5.3.zip
 
 The package contains only the runtime extension files, not tests or draft store docs.
 
+Build the Firefox package separately:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File mouse-multicopy-extension\scripts\package-firefox.ps1
+```
+
+The Firefox package uses `manifest.firefox.json` and is created at:
+
+```text
+mouse-multicopy-extension\dist\mouse-multicopy-firefox-0.5.3.zip
+```
+
 ## Architecture
 
 - `state.js` is the single source of truth for defaults, migration, normalization, groups, and clip validation.
