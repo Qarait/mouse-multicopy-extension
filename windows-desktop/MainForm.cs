@@ -8,6 +8,25 @@ namespace MouseMultiCopy.Windows
 {
     internal sealed class MainForm : Form
     {
+        private static readonly Color Ink = Color.FromArgb(20, 35, 48);
+        private static readonly Color Muted = Color.FromArgb(91, 105, 114);
+        private static readonly Color Navy = Color.FromArgb(31, 62, 104);
+        private static readonly Color Green = Color.FromArgb(24, 122, 69);
+        private static readonly Color Canvas = Color.FromArgb(244, 247, 249);
+        private static readonly Color Line = Color.FromArgb(218, 225, 230);
+        private static readonly Color CopyBlue = Color.FromArgb(232, 241, 252);
+        private static readonly Color CopyBlueText = Color.FromArgb(35, 82, 145);
+        private static readonly Color PasteGreen = Color.FromArgb(229, 244, 235);
+        private static readonly Color PasteGreenText = Color.FromArgb(22, 105, 58);
+        private static readonly Color DeleteRed = Color.FromArgb(252, 236, 236);
+        private static readonly Color DeleteRedText = Color.FromArgb(157, 48, 48);
+        private static readonly Color[] RowAccents =
+        {
+            Color.FromArgb(48, 104, 176),
+            Color.FromArgb(31, 132, 83),
+            Color.FromArgb(205, 139, 38)
+        };
+
         private const int ToggleHotKeyId = 100;
         private const int PasteAllHotKeyId = 101;
         private const uint VirtualKeyA = 0x41;
@@ -42,7 +61,7 @@ namespace MouseMultiCopy.Windows
             MinimumSize = new Size(500, 500);
             Size = new Size(620, 700);
             StartPosition = FormStartPosition.CenterScreen;
-            BackColor = Color.FromArgb(244, 248, 245);
+            BackColor = Canvas;
             Font = new Font("Segoe UI", 9F);
 
             var header = BuildHeader(out _countLabel, out _collectToggle);
@@ -53,18 +72,19 @@ namespace MouseMultiCopy.Windows
                 FlowDirection = FlowDirection.TopDown,
                 WrapContents = false,
                 AutoScroll = true,
-                Padding = new Padding(18, 14, 18, 14),
+                Padding = new Padding(20, 18, 20, 18),
                 BackColor = BackColor
             };
             _emptyLabel = new Label
             {
                 AutoSize = false,
-                Size = new Size(480, 110),
-                Text = "Copy text anywhere in Windows.\r\nYour numbered highlights will appear here.",
+                Size = new Size(480, 150),
+                Text = "COPY SOMETHING TO BEGIN\r\n\r\nUse Ctrl+C in Word, Notepad, a browser, or any other app.\r\nYour numbered highlights will appear here.",
                 TextAlign = ContentAlignment.MiddleCenter,
-                ForeColor = Color.FromArgb(86, 100, 93),
-                Font = new Font("Segoe UI", 11F),
-                Margin = new Padding(0, 34, 0, 0)
+                ForeColor = Muted,
+                Font = new Font("Segoe UI", 10F),
+                BackColor = Color.White,
+                Margin = new Padding(0, 40, 0, 0)
             };
 
             Controls.Add(_listPanel);
@@ -152,36 +172,69 @@ namespace MouseMultiCopy.Windows
             var panel = new Panel
             {
                 Dock = DockStyle.Top,
-                Height = 96,
-                Padding = new Padding(20, 15, 20, 10),
+                Height = 112,
+                Padding = new Padding(22, 15, 22, 12),
+                BackColor = Navy
+            };
+            var iconBox = new Panel
+            {
+                Location = new Point(22, 21),
+                Size = new Size(46, 46),
                 BackColor = Color.White
             };
+            var iconText = new Label
+            {
+                Dock = DockStyle.Fill,
+                Text = "MC",
+                TextAlign = ContentAlignment.MiddleCenter,
+                Font = new Font("Segoe UI Semibold", 11F, FontStyle.Bold),
+                ForeColor = Navy
+            };
+            iconBox.Controls.Add(iconText);
             var title = new Label
             {
                 AutoSize = true,
-                Location = new Point(20, 14),
+                Location = new Point(82, 18),
                 Text = "Mouse MultiCopy",
-                Font = new Font("Segoe UI Semibold", 18F, FontStyle.Bold),
-                ForeColor = Color.FromArgb(20, 35, 28)
+                Font = new Font("Segoe UI Semibold", 17F, FontStyle.Bold),
+                ForeColor = Color.White
+            };
+            var subtitle = new Label
+            {
+                AutoSize = true,
+                Location = new Point(84, 52),
+                Text = "Windows clipboard collector",
+                Font = new Font("Segoe UI", 9F),
+                ForeColor = Color.FromArgb(205, 220, 238)
             };
             countLabel = new Label
             {
                 AutoSize = true,
-                Location = new Point(23, 55),
-                ForeColor = Color.FromArgb(86, 100, 93)
+                Location = new Point(23, 82),
+                Font = new Font("Segoe UI Semibold", 8.5F),
+                ForeColor = Color.FromArgb(220, 230, 241)
             };
             var toggle = new CheckBox
             {
-                AutoSize = true,
+                Appearance = Appearance.Button,
+                AutoSize = false,
                 Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                Location = new Point(panel.Width - 126, 24),
-                Text = "Collect",
+                Location = new Point(panel.Width - 132, 28),
+                Size = new Size(108, 36),
+                Text = "Collecting",
+                TextAlign = ContentAlignment.MiddleCenter,
                 Checked = _state.Collecting,
-                Font = new Font("Segoe UI Semibold", 10F)
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold),
+                BackColor = Color.FromArgb(213, 241, 224),
+                ForeColor = Color.FromArgb(18, 91, 50),
+                Cursor = Cursors.Hand
             };
+            toggle.FlatAppearance.BorderSize = 0;
             toggle.CheckedChanged += delegate
             {
                 _state.Collecting = toggle.Checked;
+                StyleCollectToggle(toggle);
                 _store.Save(_state);
                 UpdateTrayText();
             };
@@ -189,9 +242,12 @@ namespace MouseMultiCopy.Windows
             {
                 toggle.Left = panel.ClientSize.Width - toggle.Width - 20;
             };
+            panel.Controls.Add(iconBox);
             panel.Controls.Add(title);
+            panel.Controls.Add(subtitle);
             panel.Controls.Add(countLabel);
             panel.Controls.Add(toggle);
+            StyleCollectToggle(toggle);
             collectToggle = toggle;
             return panel;
         }
@@ -201,16 +257,25 @@ namespace MouseMultiCopy.Windows
             var panel = new Panel
             {
                 Dock = DockStyle.Bottom,
-                Height = 124,
-                Padding = new Padding(18, 12, 18, 16),
+                Height = 146,
+                Padding = new Padding(20, 13, 20, 16),
                 BackColor = Color.White
+            };
+            var shortcutLabel = new Label
+            {
+                Dock = DockStyle.Top,
+                Height = 22,
+                Text = "Alt+Shift+A pastes all highlights into your last app",
+                TextAlign = ContentAlignment.MiddleCenter,
+                ForeColor = Muted,
+                Font = new Font("Segoe UI", 8.5F)
             };
             copyAllButton = new Button
             {
                 Dock = DockStyle.Top,
-                Height = 48,
+                Height = 50,
                 FlatStyle = FlatStyle.Flat,
-                BackColor = Color.FromArgb(23, 107, 58),
+                BackColor = Green,
                 ForeColor = Color.White,
                 Font = new Font("Segoe UI Semibold", 11F, FontStyle.Bold),
                 Text = "Copy All",
@@ -222,7 +287,7 @@ namespace MouseMultiCopy.Windows
             var secondary = new TableLayoutPanel
             {
                 Dock = DockStyle.Bottom,
-                Height = 38,
+                Height = 40,
                 ColumnCount = 2,
                 RowCount = 1
             };
@@ -235,8 +300,9 @@ namespace MouseMultiCopy.Windows
             secondary.Controls.Add(clearButton, 0, 0);
             secondary.Controls.Add(hideButton, 1, 0);
 
-            panel.Controls.Add(copyAllButton);
             panel.Controls.Add(secondary);
+            panel.Controls.Add(copyAllButton);
+            panel.Controls.Add(shortcutLabel);
             return panel;
         }
 
@@ -247,13 +313,25 @@ namespace MouseMultiCopy.Windows
                 Dock = DockStyle.Fill,
                 Margin = new Padding(0, 8, 6, 0),
                 FlatStyle = FlatStyle.Flat,
-                BackColor = Color.White,
-                ForeColor = Color.FromArgb(20, 35, 28),
+                BackColor = Color.FromArgb(248, 250, 251),
+                ForeColor = Ink,
                 Text = text,
-                Cursor = Cursors.Hand
+                Cursor = Cursors.Hand,
+                Font = new Font("Segoe UI Semibold", 8.8F)
             };
-            button.FlatAppearance.BorderColor = Color.FromArgb(210, 220, 214);
+            button.FlatAppearance.BorderColor = Line;
             return button;
+        }
+
+        private void StyleCollectToggle(CheckBox toggle)
+        {
+            toggle.Text = toggle.Checked ? "Collecting" : "Paused";
+            toggle.BackColor = toggle.Checked
+                ? Color.FromArgb(213, 241, 224)
+                : Color.FromArgb(247, 226, 226);
+            toggle.ForeColor = toggle.Checked
+                ? Color.FromArgb(18, 91, 50)
+                : Color.FromArgb(142, 46, 46);
         }
 
         private NotifyIcon BuildTrayIcon()
@@ -335,7 +413,7 @@ namespace MouseMultiCopy.Windows
         {
             _listPanel.SuspendLayout();
             _listPanel.Controls.Clear();
-            var availableWidth = Math.Max(420, _listPanel.ClientSize.Width - 44);
+            var availableWidth = Math.Max(420, _listPanel.ClientSize.Width - 48);
 
             if (_state.Highlights.Count == 0)
             {
@@ -350,8 +428,7 @@ namespace MouseMultiCopy.Windows
                 }
             }
 
-            _countLabel.Text = _state.Highlights.Count + " saved highlight" +
-                (_state.Highlights.Count == 1 ? string.Empty : "s");
+            _countLabel.Text = _state.Highlights.Count + " SAVED | LOCAL ONLY";
             _copyAllButton.Enabled = _state.Highlights.Count > 0;
             _copyAllButton.Text = _state.Highlights.Count > 0
                 ? "Copy All " + _state.Highlights.Count
@@ -366,35 +443,63 @@ namespace MouseMultiCopy.Windows
             var row = new HighlightRowPanel
             {
                 Width = width,
-                Height = 100
+                Height = 108,
+                AccentColor = RowAccents[index % RowAccents.Length]
             };
 
             var number = new Label
             {
-                Location = new Point(12, 14),
-                Size = new Size(38, 38),
+                Location = new Point(16, 18),
+                Size = new Size(36, 36),
                 Text = (index + 1).ToString(),
                 TextAlign = ContentAlignment.MiddleCenter,
-                BackColor = Color.FromArgb(20, 35, 28),
+                BackColor = RowAccents[index % RowAccents.Length],
                 ForeColor = Color.White,
                 Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold)
             };
-            var buttonWidth = 60;
+            var buttonWidth = 62;
             var gap = 6;
             var actionWidth = buttonWidth * 3 + gap * 2;
+            var itemTitle = new Label
+            {
+                Location = new Point(64, 15),
+                Size = new Size(Math.Max(120, width - 84 - actionWidth), 22),
+                Text = "Highlight " + (index + 1),
+                AutoEllipsis = true,
+                ForeColor = Ink,
+                Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold)
+            };
             var text = new Label
             {
-                Location = new Point(62, 12),
-                Size = new Size(Math.Max(120, width - 82 - actionWidth), 70),
+                Location = new Point(64, 39),
+                Size = new Size(Math.Max(120, width - 84 - actionWidth), 48),
                 Text = item.Text,
                 AutoEllipsis = true,
-                ForeColor = Color.FromArgb(20, 35, 28),
-                Font = new Font("Segoe UI", 9.5F)
+                ForeColor = Muted,
+                Font = new Font("Segoe UI", 9F)
             };
-            var actionsLeft = width - actionWidth - 12;
-            var copy = CreateRowButton("Copy", actionsLeft, 28, buttonWidth);
-            var paste = CreateRowButton("Paste", actionsLeft + buttonWidth + gap, 28, buttonWidth);
-            var delete = CreateRowButton("Delete", actionsLeft + (buttonWidth + gap) * 2, 28, buttonWidth);
+            var actionsLeft = width - actionWidth - 14;
+            var copy = CreateRowButton(
+                "Copy",
+                actionsLeft,
+                37,
+                buttonWidth,
+                CopyBlue,
+                CopyBlueText);
+            var paste = CreateRowButton(
+                "Paste",
+                actionsLeft + buttonWidth + gap,
+                37,
+                buttonWidth,
+                PasteGreen,
+                PasteGreenText);
+            var delete = CreateRowButton(
+                "Delete",
+                actionsLeft + (buttonWidth + gap) * 2,
+                37,
+                buttonWidth,
+                DeleteRed,
+                DeleteRedText);
             copy.Click += delegate { CopyText(item.Text, "Highlight " + (index + 1) + " copied"); };
             paste.Click += delegate { PasteTextToLastWindow(item.Text); };
             delete.Click += delegate
@@ -404,6 +509,7 @@ namespace MouseMultiCopy.Windows
             };
 
             row.Controls.Add(number);
+            row.Controls.Add(itemTitle);
             row.Controls.Add(text);
             row.Controls.Add(copy);
             row.Controls.Add(paste);
@@ -411,7 +517,13 @@ namespace MouseMultiCopy.Windows
             return row;
         }
 
-        private Button CreateRowButton(string text, int left, int top, int width)
+        private Button CreateRowButton(
+            string text,
+            int left,
+            int top,
+            int width,
+            Color background,
+            Color foreground)
         {
             var button = new Button
             {
@@ -419,12 +531,13 @@ namespace MouseMultiCopy.Windows
                 Location = new Point(left, top),
                 Size = new Size(width, 34),
                 FlatStyle = FlatStyle.Flat,
-                BackColor = Color.White,
-                ForeColor = Color.FromArgb(20, 35, 28),
+                BackColor = background,
+                ForeColor = foreground,
                 Cursor = Cursors.Hand,
                 Font = new Font("Segoe UI Semibold", 8.5F)
             };
-            button.FlatAppearance.BorderColor = Color.FromArgb(210, 220, 214);
+            button.FlatAppearance.BorderSize = 0;
+            button.FlatAppearance.MouseOverBackColor = ControlPaint.Light(background, 0.08F);
             return button;
         }
 

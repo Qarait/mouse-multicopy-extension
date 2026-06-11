@@ -11,11 +11,18 @@ namespace MouseMultiCopy.Windows
             BackColor = Color.White;
             Margin = new Padding(0, 0, 0, 10);
             Padding = new Padding(10);
+            AccentColor = Color.FromArgb(36, 72, 140);
         }
+
+        public Color AccentColor { get; set; }
 
         protected override void OnPaint(PaintEventArgs eventArgs)
         {
             base.OnPaint(eventArgs);
+            using (var accentBrush = new SolidBrush(AccentColor))
+            {
+                eventArgs.Graphics.FillRectangle(accentBrush, 0, 0, 4, Height);
+            }
             using (var pen = new Pen(Color.FromArgb(218, 225, 221)))
             {
                 eventArgs.Graphics.DrawRectangle(
