@@ -100,6 +100,15 @@ mouse-multicopy-extension\dist\mouse-multicopy-firefox-0.5.3.zip
 - `content.js` owns webpage capture, the floating Highlights palette, and direct insertion.
 - `popup.js` owns the extension popup and detailed output controls.
 
+## Windows Desktop App
+
+The native Windows MVP lives in `windows-desktop/`. It captures ordinary
+`Ctrl+C` clipboard changes across Word, Notepad, browsers, and other desktop
+applications, then provides numbered highlights, Copy All, individual paste,
+local persistence, tray behavior, and global shortcuts.
+
+See `windows-desktop/README.md` for build and test instructions.
+
 ## Use
 
 - Collect mode is on by default.

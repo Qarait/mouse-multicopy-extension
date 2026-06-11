@@ -1,5 +1,6 @@
 dist/mouse-multicopy/
 dist/mouse-multicopy-firefox/
+dist/windows/
 *.crx
 *.pem
 *.log
