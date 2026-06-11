@@ -44,6 +44,21 @@ Public privacy policy URL:
 
 https://gist.github.com/Qarait/15671558d14faa3e1ed75e4886923f6c
 
+## Public Website
+
+The static landing page lives in `docs/` and is ready for GitHub Pages.
+
+To publish it:
+
+1. Open the repository Settings on GitHub.
+2. Choose `Pages`.
+3. Set the source to `Deploy from a branch`.
+4. Select the `feature-upgrades` branch and `/docs` folder.
+5. Save.
+
+When the store listings are approved, add their public URLs to `storeLinks`
+in `docs/script.js`. The disabled review buttons will become live install links.
+
 ## Build The Store ZIP
 
 Generate icons and the store screenshot:

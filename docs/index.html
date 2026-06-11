@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Mouse MultiCopy collects several webpage highlights and lets you paste them all at once."
+    >
+    <meta name="theme-color" content="#f4f8f5">
+    <meta property="og:title" content="Mouse MultiCopy">
+    <meta
+      property="og:description"
+      content="Highlight as you read. Paste everything when you are done."
+    >
+    <meta property="og:image" content="assets/product-demo.png">
+    <title>Mouse MultiCopy | Highlight more, paste once</title>
+    <link rel="icon" href="assets/icon128.png">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Mouse MultiCopy home">
+        <img src="assets/icon128.png" alt="" width="36" height="36">
+        <span>Mouse MultiCopy</span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a href="#how-it-works">How it works</a>
+        <a href="#privacy">Privacy</a>
+        <a href="https://github.com/Qarait/mouse-multicopy-extension">GitHub</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">A faster clipboard for web reading</p>
+          <h1>Mouse MultiCopy</h1>
+          <p class="hero-line">Highlight more. Paste once.</p>
+          <p class="hero-description">
+            Save paragraph after paragraph while you read, then copy the whole
+            collection into Word, Notepad, email, or wherever your work continues.
+          </p>
+          <div class="store-actions" aria-label="Extension availability">
+            <button
+              class="store-button primary"
+              data-store="chrome"
+              type="button"
+              disabled
+            >
+              <span class="browser-mark chrome-mark" aria-hidden="true"></span>
+              <span>
+                <small>Chrome Web Store</small>
+                In review
+              </span>
+            </button>
+            <button class="store-button" data-store="edge" type="button" disabled>
+              <span class="browser-mark edge-mark" aria-hidden="true"></span>
+              <span>
+                <small>Microsoft Edge</small>
+                In review
+              </span>
+            </button>
+          </div>
+          <p class="availability">Public store releases are currently under review.</p>
+        </div>
+
+        <div class="hero-visual">
+          <img
+            src="assets/product-demo.png"
+            alt="Mouse MultiCopy saving three highlighted passages from an article"
+            width="1280"
+            height="800"
+          >
+        </div>
+      </section>
+
+      <section class="workflow" id="how-it-works">
+        <div class="section-heading">
+          <p class="eyebrow">The whole workflow</p>
+          <h2>Read normally. Keep everything worth keeping.</h2>
+        </div>
+        <ol class="steps">
+          <li>
+            <span class="step-number">1</span>
+            <div>
+              <h3>Highlight</h3>
+              <p>Select useful text on any ordinary webpage.</p>
+            </div>
+          </li>
+          <li>
+            <span class="step-number">2</span>
+            <div>
+              <h3>Keep reading</h3>
+              <p>Each new selection becomes the next saved highlight.</p>
+            </div>
+          </li>
+          <li>
+            <span class="step-number">3</span>
+            <div>
+              <h3>Paste once</h3>
+              <p>Copy the collection and paste it wherever you need it.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="details">
+        <div class="details-copy">
+          <p class="eyebrow">Simple first, powerful when needed</p>
+          <h2>Your highlights stay organized without interrupting your reading.</h2>
+          <p>
+            A small confirmation tells you exactly what was saved. The movable
+            palette stays out of the way until you need to copy, paste, reorder,
+            rename, or remove an individual highlight.
+          </p>
+        </div>
+        <ul class="feature-list">
+          <li>Copy every highlight in its original order</li>
+          <li>Separate sessions for different tasks</li>
+          <li>Optional page numbers and source details</li>
+          <li>Configurable limits and duplicate protection</li>
+        </ul>
+      </section>
+
+      <section class="privacy" id="privacy">
+        <div>
+          <p class="eyebrow">Private by design</p>
+          <h2>Your reading stays on your device.</h2>
+        </div>
+        <div class="privacy-copy">
+          <p>
+            Mouse MultiCopy stores highlights and settings locally in your browser.
+            No account is required. Saved text is not sold or sent to an external
+            server.
+          </p>
+          <a href="https://gist.github.com/Qarait/15671558d14faa3e1ed75e4886923f6c">
+            Read the privacy policy
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="closing">
+        <img src="assets/icon128.png" alt="" width="72" height="72">
+        <h2>One reading session. One clean paste.</h2>
+        <p>Mouse MultiCopy is coming to Chrome and Microsoft Edge.</p>
+        <a class="github-button" href="https://github.com/Qarait/mouse-multicopy-extension">
+          View the project on GitHub
+        </a>
+      </section>
+    </main>
+
+    <footer>
+      <span>© <span id="year"></span> Mouse MultiCopy</span>
+      <div>
+        <a href="https://github.com/Qarait/mouse-multicopy-extension/issues">Support</a>
+        <a href="https://gist.github.com/Qarait/15671558d14faa3e1ed75e4886923f6c">Privacy</a>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
