@@ -82,6 +82,7 @@ Privacy:
 - Highlights and settings are stored locally in `%LOCALAPPDATA%`.
 - No account is required.
 - No captured text is transmitted to an external server.
+- Public policy: `https://qarait.github.io/mouse-multicopy-extension/privacy.html`
 
 ## Manual release test
 

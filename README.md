@@ -42,7 +42,7 @@ For Chrome Web Store submission details, use `CHROME_WEB_STORE_SUBMISSION.md`.
 
 Public privacy policy URL:
 
-https://gist.github.com/Qarait/15671558d14faa3e1ed75e4886923f6c
+https://qarait.github.io/mouse-multicopy-extension/privacy.html
 
 ## Public Website
 
