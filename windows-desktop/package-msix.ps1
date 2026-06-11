@@ -1,6 +1,7 @@
 param(
   [string]$IdentityName = "MouseMultiCopy.Dev",
   [string]$Publisher = "CN=Mouse MultiCopy Dev",
+  [string]$PublisherDisplayName = "Mouse MultiCopy",
   [string]$Version = "0.5.3.0"
 )
 
@@ -63,6 +64,7 @@ New-StoreAsset 310 310 (Join-Path $assetsDir "Square310x310Logo.png")
 
 $escapedIdentity = [System.Security.SecurityElement]::Escape($IdentityName)
 $escapedPublisher = [System.Security.SecurityElement]::Escape($Publisher)
+$escapedPublisherDisplayName = [System.Security.SecurityElement]::Escape($PublisherDisplayName)
 
 $manifest = @"
 <?xml version="1.0" encoding="utf-8"?>
@@ -78,7 +80,7 @@ $manifest = @"
     ProcessorArchitecture="neutral" />
   <Properties>
     <DisplayName>Mouse MultiCopy</DisplayName>
-    <PublisherDisplayName>Mouse MultiCopy</PublisherDisplayName>
+    <PublisherDisplayName>$escapedPublisherDisplayName</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Resources>

@@ -28,6 +28,7 @@ Center. After reserving `Mouse MultiCopy`, open **Product identity** and copy:
 
 - Package/Identity/Name
 - Package/Identity/Publisher
+- Package/Properties/PublisherDisplayName
 
 Then rebuild:
 
@@ -35,10 +36,31 @@ Then rebuild:
 powershell -NoProfile -ExecutionPolicy Bypass `
   -File windows-desktop\package-msix.ps1 `
   -IdentityName "PARTNER_CENTER_IDENTITY_NAME" `
-  -Publisher "PARTNER_CENTER_PUBLISHER"
+  -Publisher "PARTNER_CENTER_PUBLISHER" `
+  -PublisherDisplayName "PARTNER_CENTER_PUBLISHER_DISPLAY_NAME"
 ```
 
 Do not submit the development identity package.
+
+## Mouse MultiCopy Store identity
+
+Partner Center assigned these values to Store ID `9PGSWMXG47JR`:
+
+```text
+Package/Identity/Name: MahammadBaghir.MouseMultiCopy
+Package/Identity/Publisher: CN=B846E3FD-47CD-4B16-89EF-5D58E3DE64B3
+Package/Properties/PublisherDisplayName: Mahammad Baghir
+```
+
+Create the Store submission package:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File windows-desktop\package-msix.ps1 `
+  -IdentityName "MahammadBaghir.MouseMultiCopy" `
+  -Publisher "CN=B846E3FD-47CD-4B16-89EF-5D58E3DE64B3" `
+  -PublisherDisplayName "Mahammad Baghir"
+```
 
 ## Store listing
 
